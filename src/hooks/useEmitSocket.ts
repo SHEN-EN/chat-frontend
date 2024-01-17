@@ -1,0 +1,27 @@
+import socketInstance from "@/socket/index";
+import type { userInfo } from "@/types/global";
+
+import { useIpcRenderer } from "./useIpcRenderer";
+const { invokeEvent } = useIpcRenderer();
+let user: Partial<userInfo> = {};
+invokeEvent("getStore", "userInfo").then((data: userInfo) => {
+  user = data;
+});
+
+export const useEmitSocket = () => {
+  const emitPrivateSocket = (data: string, reciverId: string) => {
+    const message = {
+      data,
+      reciverId,
+      senderId: user.uuid,
+    };
+    socketInstance.emit("private-chat", message);
+  };
+  const emitJoinSocket = () => {
+    socketInstance.emit("join", user.uuid);
+  };
+  return {
+    emitPrivateSocket,
+    emitJoinSocket,
+  };
+};

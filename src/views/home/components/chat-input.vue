@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Promotion } from '@element-plus/icons-vue'
+import { useEmitSocket } from '@/hooks/useEmitSocket'
+const senderValue = ref('')
+const { emitPrivateSocket } = useEmitSocket()
+const handleSendMessage = () => {
+  senderValue.value = ''
+  emitPrivateSocket(senderValue.value)
+}
 </script>
 <template>
   <div class="chat-tool">
@@ -9,9 +17,9 @@ import { Promotion } from '@element-plus/icons-vue'
     <i class="iconfont icon-yuyin"></i>
   </div>
   <div class="input">
-    <el-input type="textarea" :rows="4" />
+    <el-input type="textarea" v-model="senderValue" :rows="4" />
     <div class="send-area">
-      <el-button type="primary" class="send" size="small">
+      <el-button type="primary" class="send" size="small" @click="handleSendMessage">
         发送
         <el-icon>
           <Promotion />

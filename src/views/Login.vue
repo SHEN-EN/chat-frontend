@@ -32,7 +32,7 @@ import { ElMessage } from 'element-plus'
 import { useGlobalStore } from '@/stores/global'
 import userRequestModel from '@/api/modules/user'
 
-const { setAuthorization } = useGlobalStore()
+const { setAuthorization, setUserInfo } = useGlobalStore()
 const router = useRouter()
 const isLogin = ref(true)
 const text = ref<string>('')
@@ -77,6 +77,7 @@ const handleLogin = () => {
     .login(params)
     .then((res) => {
       setAuthorization(res.token)
+      setUserInfo(res.data)
       router.push({
         name: 'home',
       })
@@ -108,6 +109,7 @@ const handleRegister = () => {
     .register(params)
     .then((res) => {
       setAuthorization(res.token)
+      setUserInfo(res.data)
       router.push({
         name: 'home',
       })

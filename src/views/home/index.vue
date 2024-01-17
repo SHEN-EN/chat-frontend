@@ -1,8 +1,17 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import user from './components/user.vue'
 import { RouterView } from 'vue-router'
+import { useEmitSocket } from '@/hooks/useEmitSocket'
+const { emitJoinSocket } = useEmitSocket()
 import socket from '@/socket/index'
+import '@/socket/reciveSocket'
 socket.connect()
+onMounted(() => {
+  setTimeout(() => {
+    emitJoinSocket()
+  }, 1000)
+})
 </script>
 
 <template>

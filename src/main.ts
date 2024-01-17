@@ -6,7 +6,6 @@ import './fonts/font.css'
 import App from "./App.vue";
 import router from "./router";
 import '//at.alicdn.com/t/c/font_4383173_0an6est6rnts.js'
-import socket from '@/socket/index'
 
 const app = createApp(App);
 

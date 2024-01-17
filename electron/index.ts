@@ -65,8 +65,6 @@ const receiveEvent = () => {
     if (!("key" in arg)) return;
     const { key, value } = arg;
 
-    if(electronStore.get(key)) electronStore.delete(key);
-
     electronStore.set(key, value);
   });
 };
