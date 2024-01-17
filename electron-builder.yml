@@ -1,0 +1,20 @@
+appId: com.example.myapp
+productName: My App
+directories:
+  output: dist-electron
+  buildResources: build
+files:
+  - "**/*"
+extraResources:
+  - from: "./extraResources"
+    to: "extraResources"
+asar: false
+nsis: 
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: true
+  allowElevation: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  deleteAppDataOnUninstall: true
+  include: "./nsis-script.nsh"
