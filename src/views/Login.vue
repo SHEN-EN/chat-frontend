@@ -10,7 +10,7 @@
         <div class="tips">
           <div>还没有账号?<span @click="()=>isLogin = false">去注册</span></div>
         </div>
-        <el-button round color="#626aef" @click="handleLogin">登录</el-button>
+        <el-button round color="#626aef" @click="handleLogin" @keydown.enter="handleLogin">登录</el-button>
       </template>
       <template v-else>
         <el-input size="large" type="text" v-model="account" placeholder="请输入账号" />
@@ -19,7 +19,7 @@
         <div class="tips">
           <div>已有账号<span @click="()=>isLogin = true">去登录</span></div>
         </div>
-        <el-button round color="#626aef" @click="handleRegister">注册</el-button>
+        <el-button round color="#626aef" @click="handleRegister" @keydown.enter="handleRegister">注册</el-button>
       </template>
     </div>
   </div>
@@ -29,7 +29,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { useGlobalStore } from '@/stores/global'
+import { useGlobalStore } from '@/stores/modules/global'
 import userRequestModel from '@/api/modules/user'
 
 const { setAuthorization, setUserInfo } = useGlobalStore()
@@ -190,4 +190,4 @@ print('WELCOME')
     }
   }
 }
-</style>
+</style>@/stores/modules/global

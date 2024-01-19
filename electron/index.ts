@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import path from "path";
 let win: BrowserWindow | null;
+app.setPath('userData', `${app.getPath('userData')} - Instance2`);
 const { ipcMain } = require("electron");
 const Store = require("electron-store");
 const electronStore = new Store();

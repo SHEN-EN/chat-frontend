@@ -2,11 +2,22 @@
 import { ref } from 'vue'
 import { Promotion } from '@element-plus/icons-vue'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
+import { useChatStore } from '@/stores/modules/chat'
+import { useGlobalStore } from '@/stores/modules/global'
+import richTextEditor from '@/components/rich-text-editor.vue'
+const { getUserInfo } = useGlobalStore()
+const { setChatData } = useChatStore()
 const senderValue = ref('')
 const { emitPrivateSocket } = useEmitSocket()
-const handleSendMessage = () => {
+const handleSendMessage = async () => {
+  const messsgae = {
+    data: senderValue.value,
+    time: Date.now(),
+    senderId: (await getUserInfo()).uuid,
+  }
+  setChatData(messsgae)
+  emitPrivateSocket(senderValue.value, '18b486bb-2884-4957-bafc-376cfcbb456e')
   senderValue.value = ''
-  emitPrivateSocket(senderValue.value)
 }
 </script>
 <template>
@@ -18,8 +29,9 @@ const handleSendMessage = () => {
   </div>
   <div class="input">
     <el-input type="textarea" v-model="senderValue" :rows="4" />
+    <!-- <rich-text-editor></rich-text-editor> -->
     <div class="send-area">
-      <el-button type="primary" class="send" size="small" @click="handleSendMessage">
+      <el-button type="primary" :disabled="!senderValue" class="send" size="small" @click="handleSendMessage">
         发送
         <el-icon>
           <Promotion />
@@ -39,7 +51,6 @@ const handleSendMessage = () => {
   }
 }
 .input {
-  height: 100%;
   .el-textarea ::v-deep .el-textarea__inner {
     background-color: #f8eded;
     box-shadow: none;

@@ -2,6 +2,7 @@
 const electron = require("electron");
 const path = require("path");
 let win;
+electron.app.setPath("userData", `${electron.app.getPath("userData")} - Instance2`);
 const { ipcMain } = require("electron");
 const Store = require("electron-store");
 const electronStore = new Store();

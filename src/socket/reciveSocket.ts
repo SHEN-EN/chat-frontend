@@ -1,4 +1,6 @@
 import socketInstance from "./index";
-socketInstance.on('private-chat',(data)=>{
-    console.log(data);
-})
+import { useChatStore } from "@/stores/modules/chat";
+const { setChatData, setChatList } = useChatStore();
+socketInstance.on("private-chat", (data) => {
+  setChatData(data);
+});

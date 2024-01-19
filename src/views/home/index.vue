@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import addFriends from '@/modal/add-friends.vue'
 import { onMounted } from 'vue'
-import user from './components/user.vue'
+import user from './chat-components/user.vue'
 import { RouterView } from 'vue-router'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 const { emitJoinSocket } = useEmitSocket()
@@ -23,6 +24,7 @@ onMounted(() => {
       <RouterView />
     </div>
   </div>
+  <add-friends />
 </template>
 
 <style lang="scss" scoped>

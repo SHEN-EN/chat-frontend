@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useGlobalStore } from '@/stores/modules/global'
+const { setGlobalModal } = useGlobalStore()
 import { ref } from 'vue'
 import { Search, Plus } from '@element-plus/icons-vue'
 const searchValue = ref('')
@@ -12,7 +14,7 @@ const searchValue = ref('')
         </el-icon></span>
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item>添加好友</el-dropdown-item>
+          <el-dropdown-item @click="setGlobalModal('addFriends',true)">添加好友</el-dropdown-item>
           <el-dropdown-item>发起群聊</el-dropdown-item>
         </el-dropdown-menu>
       </template>

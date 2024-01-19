@@ -1,10 +1,9 @@
 import socketInstance from "@/socket/index";
 import type { userInfo } from "@/types/global";
-
-import { useIpcRenderer } from "./useIpcRenderer";
-const { invokeEvent } = useIpcRenderer();
+import { useGlobalStore } from "@/stores/modules/global";
+const { getUserInfo } = useGlobalStore();
 let user: Partial<userInfo> = {};
-invokeEvent("getStore", "userInfo").then((data: userInfo) => {
+getUserInfo().then((data: userInfo) => {
   user = data;
 });
 
@@ -18,7 +17,10 @@ export const useEmitSocket = () => {
     socketInstance.emit("private-chat", message);
   };
   const emitJoinSocket = () => {
-    socketInstance.emit("join", user.uuid);
+    socketInstance.emit("join", {
+        uuid:user.uuid,
+        username:user.username
+    });
   };
   return {
     emitPrivateSocket,

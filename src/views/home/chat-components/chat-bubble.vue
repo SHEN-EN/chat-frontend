@@ -2,7 +2,7 @@
 import { defineProps } from 'vue'
 
 const props = defineProps({
-  isLeft: {
+  isSender: {
     type: Boolean,
     default: true,
   },
@@ -25,11 +25,11 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="chat-bubble" :class="{ 'left': isLeft, 'right': !isLeft }">
+  <div class="chat-bubble" :class="{ 'left': isSender, 'right': !isSender }">
     <img :src="avatar" alt="Avatar" class="avatar">
     <div>
       <div class="username">{{ username }}</div>
-      <div class="message" :class="{ 'left': isLeft, 'right': !isLeft }">
+      <div class="message" :class="{ 'left': isSender, 'right': !isSender }">
         {{ message }}
       </div>
     </div>
