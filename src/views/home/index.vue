@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import addFriends from '@/modal/add-friends.vue'
+import editInfo from '@/modal/edit-info.vue'
+
 import { onMounted } from 'vue'
 import user from './chat-components/user.vue'
 import { RouterView } from 'vue-router'
@@ -25,6 +27,7 @@ onMounted(() => {
     </div>
   </div>
   <add-friends />
+  <edit-info />
 </template>
 
 <style lang="scss" scoped>

@@ -29,7 +29,8 @@ export const useGlobalStore = defineStore("global", () => {
   };
 
   const globalModal = ref({
-    addFriends:true
+    addFriends:false,
+    editInfo:true
   });
 
   const setGlobalModal = <T extends keyof typeof globalModal.value>(key:T,value:boolean) => {

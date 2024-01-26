@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useGlobalStore } from '@/stores/modules/global'
 import { useRouter } from 'vue-router'
 const router = useRouter()
+const { getUserInfo } = useGlobalStore()
+const userInfo = ref({})
 const itemList = ref<{ name: string; path: string }[]>([
   {
     name: 'chat',
@@ -20,12 +23,30 @@ const handleClick = (name: string) => {
     path: `/${name}`,
   })
 }
+onMounted(async () => {
+  userInfo.value = await getUserInfo()
+})
 </script>
 
 <template>
   <div class="user">
     <div class="avatar">
-      <img src="@/assets/user.jpg" alt="">
+      <el-popover placement="right-start" :width="260" trigger="click">
+        <template #reference>
+          <img src="@/assets/user.jpg" alt="">
+        </template>
+        <div class="userInfo">
+          <el-avatar :size="50" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+          <div class="info">
+            <div class="name">SHEN</div>
+            <div class="account">账号:916862952</div>
+          </div>
+        </div>
+        <div class="event">
+          <el-button size="small">我的动态</el-button>
+          <el-button type="primary" size="small">编辑资料</el-button>
+        </div>
+      </el-popover>
     </div>
     <div class="tool-list">
       <div :class="['tool-item',item.name === activeRoute && 'actived']" @click="handleClick(item.name)" v-for="item in itemList">
@@ -38,12 +59,41 @@ const handleClick = (name: string) => {
 </template>
 
 <style lang="scss" scoped>
+.userInfo {
+  display: flex;
+  align-items: center;
+  .info {
+    margin-left: 20px;
+    .name {
+      color: #000;
+      font-size: 16px;
+    }
+    .account {
+      font-size: 12px;
+    }
+  }
+}
+.event {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  position: relative;
+  &::after {
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 1px;
+    background: #dedbdb;
+    top: -18px;
+  }
+}
 .user {
   display: flex;
   flex-direction: column;
   align-items: center;
   .avatar {
     margin: 20px 0;
+    cursor: pointer;
     img {
       width: 35px;
       border-radius: 40px;

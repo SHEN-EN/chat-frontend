@@ -2,9 +2,9 @@
     font-family: "iconfont"; /* Project id 4383173 */
     /* Color fonts */
     src: 
-         url('//at.alicdn.com/t/c/font_4383173_ifjyew6z8sq.woff2?t=1705645124300') format('woff2'),
-         url('//at.alicdn.com/t/c/font_4383173_ifjyew6z8sq.woff?t=1705645124300') format('woff'),
-         url('//at.alicdn.com/t/c/font_4383173_ifjyew6z8sq.ttf?t=1705645124300') format('truetype');
+         url('//at.alicdn.com/t/c/font_4383173_klqqyyry49g.woff2?t=1706253975808') format('woff2'),
+         url('//at.alicdn.com/t/c/font_4383173_klqqyyry49g.woff?t=1706253975808') format('woff'),
+         url('//at.alicdn.com/t/c/font_4383173_klqqyyry49g.ttf?t=1706253975808') format('truetype');
   }
   
   .iconfont {
@@ -13,6 +13,14 @@
     font-style: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .icon-xiangji2:before {
+    content: "\e780";
+  }
+  
+  .icon-a-bianzu2:before {
+    content: "\e602";
   }
   
   .icon-icon_tab_contact_on:before {

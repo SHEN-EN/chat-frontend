@@ -5,11 +5,21 @@ import { useGlobalStore } from '@/stores/modules/global'
 import friendRequestModel from '@/api/modules/friends'
 import mainWrapper from '@/components/main-wrapper.vue'
 const characterMap = ref({}) as any
+const friendList = ref<
+  Partial<
+    {
+      uuid: string
+      username: string
+      avatar: string
+      account: string
+    }[]
+  >
+>([])
 const { getUserInfo } = useGlobalStore()
 
 const classifyCharacters = () => {
-  for (const character of ['小明', '大红', 'pqs', 'aa']) {
-    const firstLetter = pinyin(character)[0][0].toUpperCase()
+  for (const character of friendList.value) {
+    const firstLetter = pinyin(character!.username)[0][0].toUpperCase()
 
     if (/^[A-Z]$/.test(firstLetter)) {
       if (characterMap.value[firstLetter]) {
@@ -22,10 +32,10 @@ const classifyCharacters = () => {
 }
 const getFriendList = async () => {
   const uuid = (await getUserInfo()).uuid
-  friendRequestModel.getList(uuid).then((res) => {})
+  friendList.value = await (await friendRequestModel.getList(uuid)).data
+  classifyCharacters()
 }
 getFriendList()
-// classifyCharacters()
 </script>
 
 <template>
@@ -37,7 +47,6 @@ getFriendList()
             <div class="title">新的朋友</div>
             <div class="classification-item">
               <i class="iconfont icon-a-Addfriends"></i>
-              <!-- <el-avatar :size="40" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" /> -->
               <div class="name">新的朋友</div>
             </div>
           </div>
@@ -46,6 +55,14 @@ getFriendList()
             <div class="classification-item">
               <i class="iconfont icon-qunliao"></i>
               <div class="name">新的群聊</div>
+            </div>
+          </div>
+
+          <div class="classification" v-for="item,key in characterMap" :key="key">
+            <div class="title">{{ key }}</div>
+            <div class="classification-item" v-for="friend in item">
+              <el-avatar :size="40" :src="friend.avatar" />
+              <div class="name">{{ friend.username }}</div>
             </div>
           </div>
         </el-scrollbar>
@@ -84,6 +101,10 @@ getFriendList()
       .name {
         margin-left: 10px;
         font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 90%;
       }
       .iconfont {
         font-size: 28px;
