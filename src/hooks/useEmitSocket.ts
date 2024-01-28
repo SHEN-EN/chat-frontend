@@ -2,10 +2,7 @@ import socketInstance from "@/socket/index";
 import type { userInfo } from "@/types/global";
 import { useGlobalStore } from "@/stores/modules/global";
 const { getUserInfo } = useGlobalStore();
-let user: Partial<userInfo> = {};
-getUserInfo().then((data: userInfo) => {
-  user = data;
-});
+let user: Partial<userInfo> = getUserInfo();
 
 export const useEmitSocket = () => {
   const emitPrivateSocket = (data: string, reciverId: string) => {

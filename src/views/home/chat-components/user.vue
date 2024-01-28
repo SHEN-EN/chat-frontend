@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useGlobalStore } from '@/stores/modules/global'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const { getUserInfo } = useGlobalStore()
+const { getUserInfo, setGlobalModal } = useGlobalStore()
 const userInfo = ref({})
 const itemList = ref<{ name: string; path: string }[]>([
   {
@@ -24,7 +24,7 @@ const handleClick = (name: string) => {
   })
 }
 onMounted(async () => {
-  userInfo.value = await getUserInfo()
+  userInfo.value =  getUserInfo()
 })
 </script>
 
@@ -44,7 +44,7 @@ onMounted(async () => {
         </div>
         <div class="event">
           <el-button size="small">我的动态</el-button>
-          <el-button type="primary" size="small">编辑资料</el-button>
+          <el-button type="primary" size="small" @click="setGlobalModal('editInfo',true)">编辑资料</el-button>
         </div>
       </el-popover>
     </div>

@@ -18,19 +18,23 @@ export const useGlobalStore = defineStore("global", () => {
 
   const setUserInfo = (value: userInfo) => {
     userInfo.value = value;
-    sendEvent("setStore", {
-      key: "userInfo",
-      value,
-    });
+    localStorage.setItem('userInfo', JSON.stringify(value))
+
+    // sendEvent("setStore", {
+    //   key: "userInfo",
+    //   value,
+    // });
   };
 
-  const getUserInfo = async (): Promise<userInfo> => {
-    return await invokeEvent("getStore", "userInfo");
+  const getUserInfo =  (): userInfo => {
+    const userInfo = localStorage.getItem('userInfo')
+    return JSON.parse(userInfo!)
+    // return await invokeEvent("getStore", "userInfo");
   };
 
   const globalModal = ref({
     addFriends:false,
-    editInfo:true
+    editInfo:false
   });
 
   const setGlobalModal = <T extends keyof typeof globalModal.value>(key:T,value:boolean) => {

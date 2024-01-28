@@ -31,7 +31,7 @@ const classifyCharacters = () => {
   }
 }
 const getFriendList = async () => {
-  const uuid = (await getUserInfo()).uuid
+  const uuid = getUserInfo().uuid
   friendList.value = await (await friendRequestModel.getList(uuid)).data
   classifyCharacters()
 }

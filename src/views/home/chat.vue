@@ -11,14 +11,12 @@ const drawer = ref(false)
 import { useRouter } from 'vue-router'
 const { chatData } = useChatStore()
 const { getUserInfo } = useGlobalStore()
-const router = useRouter()
 
 const handleSelectChat = () => {}
 
 const userUuid = ref('')
-getUserInfo().then((res) => {
-  userUuid.value = res.uuid
-})
+userUuid.value = getUserInfo().uuid
+
 const rebuildChatData = computed(
   (): {
     message: any
@@ -94,7 +92,7 @@ const rebuildChatData = computed(
 
     .content {
       margin-left: 10px;
-
+      flex: 1;
       .item-title {
         font-size: 14px;
         margin-bottom: 5px;

@@ -1,14 +1,38 @@
-<script setup lang="ts">
+<script setup lang="ts" >
 import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import userRequestModel from '@/api/modules/user'
 import { useGlobalStore } from '@/stores/modules/global'
 import uploadFile from '@/util/uploadFile'
-const { globalModal } = useGlobalStore()
+const { globalModal, getUserInfo } = useGlobalStore()
+const userInfo = ref({
+  username: '',
+  avatar: '',
+  account: '',
+  dec: '',
+  sex: '',
+  birthday: '',
+})
 const handleUpload = () => {
   uploadFile('image/*').then((res) => {
     console.log(res)
   })
 }
+const uuid = getUserInfo().uuid
+const handleSave = async () => {
+  const params = {
+    uuid,
+    ...userInfo.value,
+    birthday: +userInfo.value.birthday,
+  }
+  console.log(params)
+  //   userRequestModel.editUserInfo(params)
+}
+const fetchUserInfo = () => {
+  userRequestModel.getUserInfo(uuid).then(res=>{
+    console.log(res)
+  })
+}
+fetchUserInfo()
 </script>
 <template>
   <el-dialog draggable title="编辑资料" v-model="globalModal.editInfo" width="50%">
@@ -21,21 +45,24 @@ const handleUpload = () => {
     <div class="form">
       <el-form label-position="right" label-width="50px">
         <el-form-item label="昵称">
-          <el-input maxlength="18" show-word-limit />
+          <el-input v-model="userInfo.username" maxlength="18" show-word-limit placeholder="请输入你的昵称" />
         </el-form-item>
         <el-form-item label="个签">
-          <el-input maxlength="80" show-word-limit />
+          <el-input v-model="userInfo.dec" maxlength="80" show-word-limit placeholder="编辑个签" />
         </el-form-item>
         <el-form-item label="性别">
-          <el-select />
+          <el-select placeholder="请选择性别" v-model="userInfo.sex">
+            <el-option key="0" label="女" value="0" />
+            <el-option key="1" label="男" value="1" />
+          </el-select>
         </el-form-item>
         <el-form-item label="生日">
-          <el-input />
+          <el-date-picker v-model="userInfo.birthday" type="date" placeholder="请选择你的生日" />
         </el-form-item>
       </el-form>
     </div>
     <template #footer>
-      <el-button type="primary">保存</el-button>
+      <el-button type="primary" @click="handleSave">保存</el-button>
       <el-button>取消</el-button>
     </template>
   </el-dialog>
@@ -73,5 +100,11 @@ const handleUpload = () => {
 }
 .form {
   margin-top: 30px;
+  .el-select {
+    width: 100%;
+  }
+  ::v-deep .el-date-editor {
+    width: 100%;
+  }
 }
 </style>

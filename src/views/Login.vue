@@ -1,30 +1,3 @@
-<template>
-  <div class="login">
-    <div class="left">
-      <div class="title" v-html="text"></div>
-    </div>
-    <div class="right">
-      <template v-if="isLogin">
-        <el-input size="large" type="text" v-model="account" placeholder="请输入账号" />
-        <el-input size="large" type="password" v-model="password" placeholder="请输入密码" show-password />
-        <div class="tips">
-          <div>还没有账号?<span @click="()=>isLogin = false">去注册</span></div>
-        </div>
-        <el-button round color="#626aef" @click="handleLogin" @keydown.enter="handleLogin">登录</el-button>
-      </template>
-      <template v-else>
-        <el-input size="large" type="text" v-model="account" placeholder="请输入账号" />
-        <el-input size="large" type="text" v-model="username" placeholder="请输入昵称" />
-        <el-input size="large" type="password" v-model="password" placeholder="请输入密码" show-password />
-        <div class="tips">
-          <div>已有账号<span @click="()=>isLogin = true">去登录</span></div>
-        </div>
-        <el-button round color="#626aef" @click="handleRegister" @keydown.enter="handleRegister">注册</el-button>
-      </template>
-    </div>
-  </div>
-</template>
-  
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -123,6 +96,34 @@ const handleRegister = () => {
 }
 print('WELCOME')
 </script>
+<template>
+  <div class="login">
+    <div class="left">
+      <div class="title" v-html="text"></div>
+    </div>
+    <div class="right">
+      <template v-if="isLogin">
+        <el-input size="large" type="text" v-model="account" placeholder="请输入账号" />
+        <el-input size="large" type="password" v-model="password" placeholder="请输入密码" show-password />
+        <div class="tips">
+          <div>还没有账号?<span @click="()=>isLogin = false">去注册</span></div>
+        </div>
+        <el-button round color="#626aef" @click="handleLogin" @keydown.enter="handleLogin">登录</el-button>
+      </template>
+      <template v-else>
+        <el-input size="large" type="text" v-model="account" placeholder="请输入账号" />
+        <el-input size="large" type="text" v-model="username" placeholder="请输入昵称" />
+        <el-input size="large" type="password" v-model="password" placeholder="请输入密码" show-password />
+        <div class="tips">
+          <div>已有账号<span @click="()=>isLogin = true">去登录</span></div>
+        </div>
+        <el-button round color="#626aef" @click="handleRegister" @keydown.enter="handleRegister">注册</el-button>
+      </template>
+    </div>
+  </div>
+</template>
+  
+
   
   <style scoped lang="scss">
 .login {

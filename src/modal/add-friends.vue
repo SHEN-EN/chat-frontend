@@ -24,7 +24,7 @@ const handleSearch = async () => {
     showTips.value = true
     return
   }
-  const uuid = (await getUserInfo()).uuid
+  const uuid = getUserInfo().uuid
   friends.value = (
     await friendRequestModel.findFriends(searchValue.value, uuid)
   )?.data
@@ -33,7 +33,7 @@ const handleSearch = async () => {
 const handleClick = async (iFriend: boolean, friendAccount: string) => {
   if (!iFriend) {
     // 添加
-    const account = (await getUserInfo()).account
+    const account = getUserInfo().account
 
     const params = {
       senderAccount: account,

@@ -13,7 +13,7 @@ const handleSendMessage = async () => {
   const messsgae = {
     data: senderValue.value,
     time: Date.now(),
-    senderId: (await getUserInfo()).uuid,
+    senderId: getUserInfo().uuid,
   }
   setChatData(messsgae)
   emitPrivateSocket(senderValue.value, '18b486bb-2884-4957-bafc-376cfcbb456e')
