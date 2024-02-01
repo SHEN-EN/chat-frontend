@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-
+import { useEmitSocket } from '@/hooks/useEmitSocket'
 import friendRequestModel from '@/api/modules/friends'
 import { useGlobalStore } from '@/stores/modules/global'
 const { globalModal, getUserInfo } = useGlobalStore()
+const { emitAddFriend } = useEmitSocket()
 const searchValue = ref('')
 const showTips = ref(true)
 const friends = ref<
@@ -41,10 +42,13 @@ const handleClick = async (iFriend: boolean, friendAccount: string) => {
     }
     try {
       await friendRequestModel.addFriend(params)
+      
       ElMessage({
         type: 'success',
-        message: '添加成功',
+        message: '申请成功',
       })
+      
+      emitAddFriend(friends.value[0]!.uuid)
     } catch (error) {
       console.log(error)
     }

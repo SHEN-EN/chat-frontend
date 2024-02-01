@@ -1,15 +1,27 @@
 <script setup lang="ts">
 import addFriends from '@/modal/add-friends.vue'
 import editInfo from '@/modal/edit-info.vue'
-
+import userRequestModel from '@/api/modules/user'
+import { useGlobalStore } from '@/stores/modules/global'
 import { onMounted } from 'vue'
-import user from './chat-components/user.vue'
+import user from '@/components/user.vue'
 import { RouterView } from 'vue-router'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 const { emitJoinSocket } = useEmitSocket()
+const { getUserInfo, setUserInfo, globalModal } = useGlobalStore()
+
 import socket from '@/socket/index'
 import '@/socket/reciveSocket'
 socket.connect()
+const uuid = getUserInfo().uuid
+
+const fetchUserInfo = () => {
+  userRequestModel.getUserInfo(uuid).then((res) => {
+    setUserInfo(res.data)
+  })
+}
+fetchUserInfo()
+
 onMounted(() => {
   setTimeout(() => {
     emitJoinSocket()
@@ -26,8 +38,8 @@ onMounted(() => {
       <RouterView />
     </div>
   </div>
-  <add-friends />
-  <edit-info />
+  <add-friends v-if="globalModal.addFriends" />
+  <edit-info v-if="globalModal.editInfo" />
 </template>
 
 <style lang="scss" scoped>

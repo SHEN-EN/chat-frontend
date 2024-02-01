@@ -2,6 +2,10 @@ export type userInfo = {
     uuid: string;
     account: string;
     username: string;
+    avatar:string;  
+    birthday:number;
+    description:string;
+    sex:string;
 };
 export type chatDataType = {
     data: any,

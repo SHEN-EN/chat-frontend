@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { pinyin } from 'pinyin-pro'
+import newFriend from './new-friend.vue'
 import { useGlobalStore } from '@/stores/modules/global'
 import friendRequestModel from '@/api/modules/friends'
 import mainWrapper from '@/components/main-wrapper.vue'
@@ -32,7 +33,7 @@ const classifyCharacters = () => {
 }
 const getFriendList = async () => {
   const uuid = getUserInfo().uuid
-  friendList.value = await (await friendRequestModel.getList(uuid)).data
+  friendList.value = await (await friendRequestModel.getList(uuid, 1)).data
   classifyCharacters()
 }
 getFriendList()
@@ -70,7 +71,7 @@ getFriendList()
     </template>
     <template #right>
       <div class="contact-detail">
-
+        <new-friend></new-friend>
       </div>
     </template>
   </main-wrapper>

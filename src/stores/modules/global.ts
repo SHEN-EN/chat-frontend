@@ -14,10 +14,10 @@ export const useGlobalStore = defineStore("global", () => {
     });
   };
 
-  const userInfo = ref<Partial<userInfo>>({});
+  const user = ref<Partial<userInfo>>({});
 
   const setUserInfo = (value: userInfo) => {
-    userInfo.value = value;
+    user.value = value;
     localStorage.setItem('userInfo', JSON.stringify(value))
 
     // sendEvent("setStore", {
@@ -41,13 +41,19 @@ export const useGlobalStore = defineStore("global", () => {
     globalModal.value[key] = value;
   }
   
+  const globalStatus = ref({
+    hasNewFriends:false,
+    notificationNum:0,
+  })
+
   return {
     authorization,
     setAuthorization,
-    userInfo,
+    user,
     setUserInfo,
     getUserInfo,
     globalModal,
-    setGlobalModal
+    setGlobalModal,
+    globalStatus
   };
 });

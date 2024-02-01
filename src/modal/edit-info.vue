@@ -1,43 +1,47 @@
 <script setup lang="ts" >
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import userRequestModel from '@/api/modules/user'
 import { useGlobalStore } from '@/stores/modules/global'
 import uploadFile from '@/util/uploadFile'
-const { globalModal, getUserInfo } = useGlobalStore()
+import convertBase64 from '@/util/convertBase64'
+const { globalModal, getUserInfo, setGlobalModal } = useGlobalStore()
+
 const userInfo = ref({
   username: '',
   avatar: '',
-  account: '',
   dec: '',
   sex: '',
-  birthday: '',
+  birthday: 0,
 })
+
 const handleUpload = () => {
-  uploadFile('image/*').then((res) => {
-    console.log(res)
+  uploadFile('image/*').then(async (res) => {
+    userInfo.value.avatar = (await convertBase64(res.target.files[0])) as string
   })
 }
-const uuid = getUserInfo().uuid
+
 const handleSave = async () => {
   const params = {
-    uuid,
+    uuid: getUserInfo().uuid,
     ...userInfo.value,
     birthday: +userInfo.value.birthday,
   }
-  console.log(params)
-  //   userRequestModel.editUserInfo(params)
+
+  await userRequestModel.editUserInfo(params)
 }
-const fetchUserInfo = () => {
-  userRequestModel.getUserInfo(uuid).then(res=>{
-    console.log(res)
-  })
-}
-fetchUserInfo()
+onMounted(() => {
+  const { avatar, birthday, description, sex, username } = getUserInfo()
+  userInfo.value.avatar = avatar
+  userInfo.value.birthday = +birthday
+  userInfo.value.dec = description
+  userInfo.value.sex = sex
+  userInfo.value.username = username
+})
 </script>
 <template>
   <el-dialog draggable title="编辑资料" v-model="globalModal.editInfo" width="50%">
     <div class="avatar">
-      <img src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" alt="">
+      <img :src="userInfo.avatar" alt="">
       <div class="mark" @click="handleUpload">
         <i class="iconfont icon-xiangji2"></i>
       </div>
@@ -63,7 +67,7 @@ fetchUserInfo()
     </div>
     <template #footer>
       <el-button type="primary" @click="handleSave">保存</el-button>
-      <el-button>取消</el-button>
+      <el-button @click="setGlobalModal('editInfo',false)">取消</el-button>
     </template>
   </el-dialog>
 </template>

@@ -4,8 +4,8 @@ import { useChatStore } from '@/stores/modules/chat'
 import { useGlobalStore } from '@/stores/modules/global'
 import type { chatDataType } from '@/types/global'
 
-import chatBubble from './chat-components/chat-bubble.vue'
-import chatInput from './chat-components/chat-input.vue'
+import chatBubble from './components/chat-bubble.vue'
+import chatInput from './components/chat-input.vue'
 import mainWrapper from '@/components/main-wrapper.vue'
 const drawer = ref(false)
 import { useRouter } from 'vue-router'

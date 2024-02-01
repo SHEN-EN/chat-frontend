@@ -1,20 +1,28 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useGlobalStore } from '@/stores/modules/global'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const { getUserInfo, setGlobalModal } = useGlobalStore()
-const userInfo = ref({})
-const itemList = ref<{ name: string; path: string }[]>([
-  {
-    name: 'chat',
-    path: 'icon-chat',
-  },
-  {
-    name: 'friend',
-    path: 'icon-mn_pengyou_fill',
-  },
-])
+const { setGlobalModal } = useGlobalStore()
+const { user, globalStatus } = storeToRefs(useGlobalStore())
+const itemList = computed<
+  { name: string; path: string; hiddenBadge: boolean }[]
+>(() => {
+  return [
+    {
+      name: 'chat',
+      path: 'icon-chat',
+      hiddenBadge: globalStatus.value.notificationNum < 1,
+    },
+    {
+      name: 'friend',
+      path: 'icon-mn_pengyou_fill',
+      hiddenBadge: !globalStatus.value.hasNewFriends,
+    },
+  ]
+})
+
 const activeRoute = ref('')
 const handleClick = (name: string) => {
   activeRoute.value = name
@@ -23,9 +31,6 @@ const handleClick = (name: string) => {
     path: `/${name}`,
   })
 }
-onMounted(async () => {
-  userInfo.value =  getUserInfo()
-})
 </script>
 
 <template>
@@ -33,13 +38,13 @@ onMounted(async () => {
     <div class="avatar">
       <el-popover placement="right-start" :width="260" trigger="click">
         <template #reference>
-          <img src="@/assets/user.jpg" alt="">
+          <img :src="user.avatar" alt="">
         </template>
         <div class="userInfo">
-          <el-avatar :size="50" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+          <el-avatar :size="50" :src="user.avatar" />
           <div class="info">
-            <div class="name">SHEN</div>
-            <div class="account">账号:916862952</div>
+            <div class="name">{{ user.username }}</div>
+            <div class="account">账号:{{ user.account }}</div>
           </div>
         </div>
         <div class="event">
@@ -50,9 +55,11 @@ onMounted(async () => {
     </div>
     <div class="tool-list">
       <div :class="['tool-item',item.name === activeRoute && 'actived']" @click="handleClick(item.name)" v-for="item in itemList">
-        <svg class="iconfont" aria-hidden="true">
-          <use :xlink:href="`#${item.path}`"></use>
-        </svg>
+        <el-badge :value="0" :max="10" :hidden="item.hiddenBadge" :is-dot="item.name === 'friend'">
+          <svg class="iconfont" aria-hidden="true">
+            <use :xlink:href="`#${item.path}`"></use>
+          </svg>
+        </el-badge>
       </div>
     </div>
   </div>

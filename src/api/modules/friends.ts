@@ -1,6 +1,6 @@
 import request from '../index'
-const getList = (params) =>{
-    return request.get(`/friends/getList?uuid=${params}`)
+const getList = (uuid,status) =>{
+    return request.get(`/friends/getList?uuid=${uuid}&status=${status}`)
 }
 const findFriends = (account:string,uuid:string) =>{
     return request.get(`/friends/searchFriends?account=${account}&uuid=${uuid}`)
