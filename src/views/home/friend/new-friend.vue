@@ -1,10 +1,32 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useEmitSocket } from '@/hooks/useEmitSocket'
+import { ElMessageBox } from 'element-plus'
 import friendRequestModel from '@/api/modules/friends'
+const { emitAgreeFriendApply } = useEmitSocket()
 const list = ref([])
 const getList = () => {
   friendRequestModel.getApplyList().then((res) => {
     list.value = res.data
+  })
+}
+const handleAgree = async (uuid: string) => {
+  try {
+    await friendRequestModel.agreeApply(uuid)
+    emitAgreeFriendApply(uuid) // 同意好友申请
+    getList()
+  } catch (error) {
+    console.log(error)
+  }
+}
+const handleClear = () => {
+  ElMessageBox.confirm('你确定要删除记录吗？', '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    await friendRequestModel.clearApplyList()
+    getList()
   })
 }
 getList()
@@ -14,7 +36,7 @@ getList()
   <div class="container">
     <div class="header">
       <div class="title">好友通知</div>
-      <i class="iconfont icon-delete"></i>
+      <i class="iconfont icon-delete" @click="handleClear"></i>
     </div>
     <div class="list">
       <div class="item" v-for="item in list" :key="item.uuid">
@@ -23,16 +45,24 @@ getList()
           <div class="block">
             <div class="name">
               {{item.friendUsername}}
-              <span>请求加为好友</span>
+
+              <span>{{item.uuid != item.applicantuuid ? '请求加为好友' : '正在验证你的邀请'}}</span>
             </div>
             <div class="time">{{ item.time }}</div>
           </div>
         </div>
+
         <template v-if="item.isAgree == 0">
-          <el-button size="small" type="primary">同意</el-button>
+          <template v-if="item.uuid != item.applicantuuid">
+            <el-button size="small" type="primary" @click="handleAgree(item.frienduuid)">同意</el-button>
+          </template>
+          <template v-else>
+            <div class="tips">等待验证</div>
+          </template>
         </template>
+
         <template v-else>
-          <div class="ispass">已通过</div>
+          <div class="tips">已通过</div>
         </template>
       </div>
     </div>
@@ -87,7 +117,7 @@ getList()
           }
         }
       }
-      .ispass {
+      .tips {
         color: #a79f9f;
         font-size: 14px;
       }

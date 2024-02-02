@@ -23,3 +23,6 @@ socketInstance.on("private-chat", (data) => {
 socketInstance.on("add-friends", () => {
   globalStatus.value.hasNewFriends = true;
 });
+socketInstance.on('agree-friend-apply',(data)=>{
+    chatList.value.unshift(data); // 置顶
+})

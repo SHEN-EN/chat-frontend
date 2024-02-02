@@ -1,23 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { pinyin } from 'pinyin-pro'
+import { storeToRefs } from 'pinia'
+import { useGlobalStore } from '@/stores/modules/global'
 import newFriend from './new-friend.vue'
-import friendRequestModel from '@/api/modules/friends'
 import mainWrapper from '@/components/main-wrapper.vue'
+const { getFriendsList } = useGlobalStore()
+const { friendsList } = storeToRefs(useGlobalStore())
+
 const characterMap = ref({}) as any
-const friendList = ref<
-  Partial<
-    {
-      uuid: string
-      username: string
-      avatar: string
-      account: string
-    }[]
-  >
->([])
 
 const classifyCharacters = () => {
-  for (const character of friendList.value) {
+  for (const character of friendsList.value) {
     const firstLetter = pinyin(character!.username)[0][0].toUpperCase()
 
     if (/^[A-Z]$/.test(firstLetter)) {
@@ -30,7 +24,7 @@ const classifyCharacters = () => {
   }
 }
 const getFriendList = async () => {
-  friendList.value = await (await friendRequestModel.getList(1)).data
+  await getFriendsList()
   classifyCharacters()
 }
 getFriendList()

@@ -10,14 +10,12 @@ export const useEmitSocket = () => {
     const message = {
       data,
       reciverId,
-      senderId: user.uuid,
     };
     socketInstance.emit("private-chat", message);
   };
 
   const emitJoinSocket = () => {
     socketInstance.emit("join", {
-        uuid:user.uuid,
         username:user.username
     });
   };
@@ -25,12 +23,18 @@ export const useEmitSocket = () => {
   const emitAddFriend = (reciverId:string) =>{
     socketInstance.emit("add-friends",{
         reciverId,
-        senderId: user.uuid,
+    })
+  }
+
+  const emitAgreeFriendApply = (reciverId:string) =>{
+    socketInstance.emit("agree-friend-apply",{
+        reciverId,
     })
   }
   return {
     emitPrivateSocket,
     emitJoinSocket,
-    emitAddFriend
+    emitAddFriend,
+    emitAgreeFriendApply
   };
 };
