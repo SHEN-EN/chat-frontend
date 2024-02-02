@@ -8,21 +8,20 @@ import user from '@/components/user.vue'
 import { RouterView } from 'vue-router'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 const { emitJoinSocket } = useEmitSocket()
-const { getUserInfo, setUserInfo, globalModal } = useGlobalStore()
+const {  setUserInfo, globalModal } = useGlobalStore()
 
 import socket from '@/socket/index'
 import '@/socket/reciveSocket'
 socket.connect()
-const uuid = getUserInfo().uuid
 
 const fetchUserInfo = () => {
-  userRequestModel.getUserInfo(uuid).then((res) => {
+  userRequestModel.getUserInfo().then((res) => {
     setUserInfo(res.data)
   })
 }
-fetchUserInfo()
 
 onMounted(() => {
+  fetchUserInfo()
   setTimeout(() => {
     emitJoinSocket()
   }, 1000)

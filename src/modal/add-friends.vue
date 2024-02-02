@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 import friendRequestModel from '@/api/modules/friends'
 import { useGlobalStore } from '@/stores/modules/global'
-const { globalModal, getUserInfo } = useGlobalStore()
+const { globalModal } = useGlobalStore()
 const { emitAddFriend } = useEmitSocket()
 const searchValue = ref('')
 const showTips = ref(true)
@@ -25,29 +25,27 @@ const handleSearch = async () => {
     showTips.value = true
     return
   }
-  const uuid = getUserInfo().uuid
   friends.value = (
-    await friendRequestModel.findFriends(searchValue.value, uuid)
+    await friendRequestModel.findFriends(searchValue.value)
   )?.data
   showTips.value = false
 }
 const handleClick = async (iFriend: boolean, friendAccount: string) => {
   if (!iFriend) {
     // 添加
-    const account = getUserInfo().account
 
     const params = {
-      senderAccount: account,
-      reciveAccount: friendAccount,
+      account: friendAccount,
     }
+
     try {
       await friendRequestModel.addFriend(params)
-      
+
       ElMessage({
         type: 'success',
         message: '申请成功',
       })
-      
+
       emitAddFriend(friends.value[0]!.uuid)
     } catch (error) {
       console.log(error)

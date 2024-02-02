@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { pinyin } from 'pinyin-pro'
 import newFriend from './new-friend.vue'
-import { useGlobalStore } from '@/stores/modules/global'
 import friendRequestModel from '@/api/modules/friends'
 import mainWrapper from '@/components/main-wrapper.vue'
 const characterMap = ref({}) as any
@@ -16,7 +15,6 @@ const friendList = ref<
     }[]
   >
 >([])
-const { getUserInfo } = useGlobalStore()
 
 const classifyCharacters = () => {
   for (const character of friendList.value) {
@@ -32,11 +30,14 @@ const classifyCharacters = () => {
   }
 }
 const getFriendList = async () => {
-  const uuid = getUserInfo().uuid
-  friendList.value = await (await friendRequestModel.getList(uuid, 1)).data
+  friendList.value = await (await friendRequestModel.getList(1)).data
   classifyCharacters()
 }
 getFriendList()
+const activeRoute = ref()
+const navigatorComponents = (name: any) => {
+  activeRoute.value = name
+}
 </script>
 
 <template>
@@ -46,7 +47,7 @@ getFriendList()
         <el-scrollbar>
           <div class="classification">
             <div class="title">新的朋友</div>
-            <div class="classification-item">
+            <div class="classification-item" @click="navigatorComponents(newFriend)">
               <i class="iconfont icon-a-Addfriends"></i>
               <div class="name">新的朋友</div>
             </div>
@@ -71,7 +72,7 @@ getFriendList()
     </template>
     <template #right>
       <div class="contact-detail">
-        <new-friend></new-friend>
+        <component :is="activeRoute"></component>
       </div>
     </template>
   </main-wrapper>

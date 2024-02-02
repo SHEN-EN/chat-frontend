@@ -1,5 +1,6 @@
 <script setup lang="ts" >
 import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import userRequestModel from '@/api/modules/user'
 import { useGlobalStore } from '@/stores/modules/global'
 import uploadFile from '@/util/uploadFile'
@@ -22,12 +23,20 @@ const handleUpload = () => {
 
 const handleSave = async () => {
   const params = {
-    uuid: getUserInfo().uuid,
     ...userInfo.value,
     birthday: +userInfo.value.birthday,
   }
+  try {
+    await userRequestModel.editUserInfo(params)
+    ElMessage({
+      type: 'success',
+      message: '修改成功',
+    })
+  } catch (error) {
+    console.log(error)
+  }
 
-  await userRequestModel.editUserInfo(params)
+  setGlobalModal('editInfo', false)
 }
 onMounted(() => {
   const { avatar, birthday, description, sex, username } = getUserInfo()

@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import friendRequestModel from '@/api/modules/friends'
+const list = ref([])
+const getList = () => {
+  friendRequestModel.getApplyList().then((res) => {
+    list.value = res.data
+  })
+}
+getList()
 </script>
 
 <template>
@@ -8,18 +17,23 @@
       <i class="iconfont icon-delete"></i>
     </div>
     <div class="list">
-      <div class="item">
+      <div class="item" v-for="item in list" :key="item.uuid">
         <div class="info">
-          <img class="avatar" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" alt="">
+          <img class="avatar" :src="item.friendAvatar" alt="">
           <div class="block">
             <div class="name">
-              陈
+              {{item.friendUsername}}
               <span>请求加为好友</span>
             </div>
-            <div class="time">2023/3/2</div>
+            <div class="time">{{ item.time }}</div>
           </div>
         </div>
-        <el-button size="small" type="primary">同意</el-button>
+        <template v-if="item.isAgree == 0">
+          <el-button size="small" type="primary">同意</el-button>
+        </template>
+        <template v-else>
+          <div class="ispass">已通过</div>
+        </template>
       </div>
     </div>
   </div>
@@ -72,6 +86,10 @@
             color: #a79f9f;
           }
         }
+      }
+      .ispass {
+        color: #a79f9f;
+        font-size: 14px;
       }
     }
   }

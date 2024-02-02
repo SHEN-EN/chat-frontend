@@ -10,8 +10,8 @@ const login = (params) =>{
 const editUserInfo  = (params) =>{
     return request.put('/users/editUserInfo',params)
 }
-const getUserInfo = (uuid) =>{
-    return request.get(`/users/getUserInfo?uuid=${uuid}`)
+const getUserInfo = () =>{
+    return request.get(`/users/getUserInfo`)
 }
 export default {
     register,
