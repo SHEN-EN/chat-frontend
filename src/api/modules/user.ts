@@ -13,9 +13,13 @@ const editUserInfo  = (params) =>{
 const getUserInfo = () =>{
     return request.get(`/users/getUserInfo`)
 }
+const getPublicKey = ()=>{
+    return request.get(`/users/getPublicKey`)
+}
 export default {
     register,
     login,
     editUserInfo,
-    getUserInfo
+    getUserInfo,
+    getPublicKey
 }

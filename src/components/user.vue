@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGlobalStore } from '@/stores/modules/global'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
+const route = useRoute()
 const { setGlobalModal } = useGlobalStore()
 const { user, globalStatus } = storeToRefs(useGlobalStore())
 const itemList = computed<
@@ -22,11 +23,19 @@ const itemList = computed<
     },
   ]
 })
-
 const activeRoute = ref('')
-const handleClick = (name: string) => {
-  activeRoute.value = name
 
+watch(
+  () => route.name,
+  (value) => {
+    activeRoute.value = value as string
+  },
+  {
+    immediate: true,
+  }
+)
+
+const handleClick = (name: string) => {
   router.push({
     path: `/${name}`,
   })

@@ -6,7 +6,6 @@ const whilePath = ["/user/login", "/user/reigster"];
 const axiosInstance = axios.create({
     baseURL: "/v1",
 });
-console.log(router)
 axiosInstance.interceptors.request.use(
     (config) => {
 

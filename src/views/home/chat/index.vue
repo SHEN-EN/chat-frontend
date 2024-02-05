@@ -53,7 +53,7 @@ const timestampToDateString = (timestamp: number): string => {
 <template>
   <main-wrapper>
     <template #list>
-      <div class="list">
+      <div class="list" v-if="chatList.length > 0">
         <div class="item" @click="handleSelectChat(item.reciverId)" v-for="item in chatList" :key="item.senderId">
           <div>
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
@@ -64,6 +64,9 @@ const timestampToDateString = (timestamp: number): string => {
           </div>
           <div class="time">{{ timestampToDateString(item.time)  }}</div>
         </div>
+      </div>
+      <div class="not-message" v-else>
+        暂时没有新消息
       </div>
     </template>
     <template #right>
@@ -142,6 +145,15 @@ const timestampToDateString = (timestamp: number): string => {
       background: #dedede;
     }
   }
+}
+.not-message {
+  font-size: 12px;
+  display: flex;
+  height: 100%;
+  color: #c6b7b7;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 .chat {
   flex: 1;

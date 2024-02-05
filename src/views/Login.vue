@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useGlobalStore } from '@/stores/modules/global'
 import userRequestModel from '@/api/modules/user'
+import JSEncrypt from 'jsencrypt'
+
+const crypt = new JSEncrypt()
 
 const { setAuthorization, setUserInfo } = useGlobalStore()
 const router = useRouter()
@@ -43,7 +46,7 @@ const handleLogin = () => {
 
   const params = {
     account: account.value,
-    password: password.value,
+    password: crypt.encrypt(password.value),
   }
 
   userRequestModel
@@ -52,7 +55,7 @@ const handleLogin = () => {
       setAuthorization(res.token)
       setUserInfo(res.data)
       router.push({
-        name: 'home',
+        name: 'chat',
       })
     })
     .catch((err) => {
@@ -74,7 +77,7 @@ const handleRegister = () => {
 
   const params = {
     account: account.value,
-    password: password.value,
+    password: crypt.encrypt(password.value),
     username: username.value,
   }
 
@@ -84,7 +87,7 @@ const handleRegister = () => {
       setAuthorization(res.token)
       setUserInfo(res.data)
       router.push({
-        name: 'home',
+        name: 'chat',
       })
     })
     .catch((err) => {
@@ -94,7 +97,16 @@ const handleRegister = () => {
       })
     })
 }
+
+const publicKey = ref('')
+const getPublicKey = async () => {
+  publicKey.value = (await userRequestModel.getPublicKey()).data
+  crypt.setPublicKey(atob(publicKey.value))
+  localStorage.setItem('public-key', publicKey.value)
+}
+
 print('WELCOME')
+getPublicKey()
 </script>
 <template>
   <div class="login">
