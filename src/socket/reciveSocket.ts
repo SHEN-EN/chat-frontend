@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import { useGlobalStore } from "@/stores/modules/global";
 import { useChatStore } from "@/stores/modules/chat";
 const { globalStatus } = storeToRefs(useGlobalStore());
+const { getFriendsList } = useGlobalStore()
 
 const { setChatData } = useChatStore();
 const { chatList } = storeToRefs(useChatStore());
@@ -24,5 +25,6 @@ socketInstance.on("add-friends", () => {
   globalStatus.value.hasNewFriends = true;
 });
 socketInstance.on('agree-friend-apply',(data)=>{
+    getFriendsList()
     chatList.value.unshift(data); // 置顶
 })

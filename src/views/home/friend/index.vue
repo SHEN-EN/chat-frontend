@@ -1,32 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { pinyin } from 'pinyin-pro'
 import { storeToRefs } from 'pinia'
 import { useGlobalStore } from '@/stores/modules/global'
 import newFriend from './new-friend.vue'
 import mainWrapper from '@/components/main-wrapper.vue'
 const { getFriendsList } = useGlobalStore()
-const { friendsList } = storeToRefs(useGlobalStore())
+const { characterMap } = storeToRefs(useGlobalStore())
 
-const characterMap = ref({}) as any
-
-const classifyCharacters = () => {
-  for (const character of friendsList.value) {
-    const firstLetter = pinyin(character!.username)[0][0].toUpperCase()
-
-    if (/^[A-Z]$/.test(firstLetter)) {
-      if (characterMap.value[firstLetter]) {
-        characterMap.value[firstLetter].push(character)
-      } else {
-        characterMap.value[firstLetter] = [character]
-      }
-    }
-  }
-}
 const getFriendList = async () => {
   await getFriendsList()
-  classifyCharacters()
 }
+
 getFriendList()
 const activeRoute = ref()
 const navigatorComponents = (name: any) => {
@@ -66,7 +50,7 @@ const navigatorComponents = (name: any) => {
     </template>
     <template #right>
       <div class="contact-detail">
-        <component :is="activeRoute"></component>
+        <component :is="activeRoute" @refresh="getFriendList"></component>
       </div>
     </template>
   </main-wrapper>

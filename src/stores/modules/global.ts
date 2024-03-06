@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { pinyin } from 'pinyin-pro'
 import { defineStore } from "pinia";
 import friendRequestModel from '@/api/modules/friends'
 import type { userInfo } from "@/types/global";
@@ -47,9 +48,27 @@ export const useGlobalStore = defineStore("global", () => {
         >
     >([])
 
+    const characterMap = ref({}) as any
+
+    const classifyCharacters = () => {
+        characterMap.value = {}
+        for (const character of friendsList.value) {
+          const firstLetter = pinyin(character!.username)[0][0].toUpperCase()
+      
+          if (/^[A-Z]$/.test(firstLetter)) {
+            if (characterMap.value[firstLetter]) {
+              characterMap.value[firstLetter].push(character)
+            } else {
+              characterMap.value[firstLetter] = [character]
+            }
+          }
+        }
+    }
+
     const getFriendsList = async () => {
         const res = await friendRequestModel.getList(1)
         friendsList.value = res.data;
+        classifyCharacters()
     }
 
     return {
@@ -62,6 +81,7 @@ export const useGlobalStore = defineStore("global", () => {
         setGlobalModal,
         globalStatus,
         friendsList,
-        getFriendsList
+        getFriendsList,
+        characterMap
     };
 });

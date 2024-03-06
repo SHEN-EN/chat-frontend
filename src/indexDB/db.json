@@ -1,0 +1,40 @@
+{
+    "tableOptions": [
+        {
+            "tableName": "tb_chatList",
+            "option": {
+                "keyPath": "uuid"
+            },
+            "index": [
+                {
+                    "name": "avatar",
+                    "keyPath": "avatar"
+                },
+                {
+                    "name": "lastmessage",
+                    "keyPath": "lastmessage"
+                },
+                {
+                    "name": "lasttime",
+                    "keyPath": "lasttime"
+                },
+                {
+                    "name": "sendername",
+                    "keyPath": "sendername"
+                },
+                {
+                    "name": "senderuuid",
+                    "keyPath": "senderuuid"
+                },
+                {
+                    "name": "uuid",
+                    "keyPath": "uuid"
+                },
+                {
+                    "name": "isreaded",
+                    "keyPath": "isreaded"
+                }
+            ]
+        }
+    ]
+}

@@ -4,6 +4,7 @@ import { useEmitSocket } from '@/hooks/useEmitSocket'
 import { ElMessageBox } from 'element-plus'
 import friendRequestModel from '@/api/modules/friends'
 const { emitAgreeFriendApply } = useEmitSocket()
+const emit = defineEmits(['refresh'])
 const list = ref([])
 const getList = () => {
   friendRequestModel.getApplyList().then((res) => {
@@ -14,6 +15,7 @@ const handleAgree = async (uuid: string) => {
   try {
     await friendRequestModel.agreeApply(uuid)
     emitAgreeFriendApply(uuid) // 同意好友申请
+    emit('refresh')
     getList()
   } catch (error) {
     console.log(error)
