@@ -17,5 +17,5 @@ app.use(ElementPlus);
 
 app.mount("#app");
 openDatabase("chat",1)
-createTable(table.tableOptions);
+createTable(table.tableOptions)
 

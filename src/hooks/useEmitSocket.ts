@@ -5,7 +5,6 @@ const { getUserInfo } = useGlobalStore();
 let user: Partial<userInfo> = getUserInfo();
 
 export const useEmitSocket = () => {
-
   const emitPrivateSocket = (data: string, reciverId: string) => {
     const message = {
       data,
@@ -16,25 +15,26 @@ export const useEmitSocket = () => {
 
   const emitJoinSocket = () => {
     socketInstance.emit("join", {
-        username:user.username
+      username: user.username,
     });
   };
 
-  const emitAddFriend = (reciverId:string) =>{
-    socketInstance.emit("add-friends",{
-        reciverId,
-    })
-  }
+  const emitAddFriend = (reciverId: string) => {
+    socketInstance.emit("add-friends", {
+      reciverId,
+    });
+  };
 
-  const emitAgreeFriendApply = (reciverId:string) =>{
-    socketInstance.emit("agree-friend-apply",{
-        reciverId,
-    })
-  }
+  const emitAgreeFriendApply = (data: {
+    reciverId: string;
+    avatar: string;
+  }) => {
+    socketInstance.emit("agree-friend-apply", data);
+  };
   return {
     emitPrivateSocket,
     emitJoinSocket,
     emitAddFriend,
-    emitAgreeFriendApply
+    emitAgreeFriendApply,
   };
 };

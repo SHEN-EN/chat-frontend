@@ -2,24 +2,52 @@
 import addFriends from '@/modal/add-friends.vue'
 import editInfo from '@/modal/edit-info.vue'
 import userRequestModel from '@/api/modules/user'
-import { useGlobalStore } from '@/stores/modules/global'
-import { onMounted } from 'vue'
 import user from '@/components/user.vue'
+import { useGlobalStore } from '@/stores/modules/global'
+import { useChatStore } from '@/stores/modules/chat'
+import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { RouterView } from 'vue-router'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 const { emitJoinSocket } = useEmitSocket()
-const {  setUserInfo, globalModal } = useGlobalStore()
+const { setUserInfo, globalModal } = useGlobalStore()
+const { chatList } = storeToRefs(useChatStore())
+
+import { get } from '@/indexDB'
 
 import socket from '@/socket/index'
 import '@/socket/reciveSocket'
 socket.connect()
 
 const fetchUserInfo = () => {
-  userRequestModel.getUserInfo().then((res) => {
+  userRequestModel.getUserInfo().then((res: { data: { uuid: string } }) => {
     setUserInfo(res.data)
+    fetchChatList(res.data.uuid)
   })
 }
+const fetchChatList = async (uuid: string) => {
+  get('tb_chatList', 'uuid', uuid).then((res: any[]) => {
+    for (const iterator of res) {
+      const {
+        lastmessage,
+        lasttime,
+        sendername,
+        senderuuid,
+        unreadnums,
+        uuid,
+        avatar,
+      } = iterator
 
+      chatList.value.push({
+        time: lasttime,
+        uuid: senderuuid,
+        username: sendername,
+        data: lastmessage,
+        avatar,
+      })
+    }
+  })
+}
 onMounted(() => {
   fetchUserInfo()
   setTimeout(() => {

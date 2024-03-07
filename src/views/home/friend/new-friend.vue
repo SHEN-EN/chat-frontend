@@ -11,10 +11,10 @@ const getList = () => {
     list.value = res.data
   })
 }
-const handleAgree = async (uuid: string) => {
+const handleAgree = async (uuid: string, avatar: string) => {
   try {
     await friendRequestModel.agreeApply(uuid)
-    emitAgreeFriendApply(uuid) // 同意好友申请
+    emitAgreeFriendApply({ reciverId: uuid, avatar }) // 同意好友申请
     emit('refresh')
     getList()
   } catch (error) {
@@ -56,7 +56,7 @@ getList()
 
         <template v-if="item.isAgree == 0">
           <template v-if="item.uuid != item.applicantuuid">
-            <el-button size="small" type="primary" @click="handleAgree(item.frienduuid)">同意</el-button>
+            <el-button size="small" type="primary" @click="handleAgree(item.frienduuid,item.friendAvatar)">同意</el-button>
           </template>
           <template v-else>
             <div class="tips">等待验证</div>

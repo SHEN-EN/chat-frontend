@@ -8,7 +8,6 @@ import chatBubble from './components/chat-bubble.vue'
 import chatInput from './components/chat-input.vue'
 import mainWrapper from '@/components/main-wrapper.vue'
 const drawer = ref(false)
-import { useRouter } from 'vue-router'
 const { chatData, chatList } = useChatStore()
 const { getUserInfo } = useGlobalStore()
 
@@ -60,7 +59,7 @@ const timestampToDateString = (timestamp: number): string => {
           </div>
           <div class="content">
             <div class="item-title">{{ item.username }}</div>
-            <div class="item-text">{{ item.data  || '112313'}}</div>
+            <div class="item-text">{{ item.data}}</div>
           </div>
           <div class="time">{{ timestampToDateString(item.time)  }}</div>
         </div>
@@ -111,6 +110,7 @@ const timestampToDateString = (timestamp: number): string => {
     height: 65px;
     padding: 10px;
     box-sizing: border-box;
+    cursor: pointer;
 
     .content {
       margin-left: 10px;

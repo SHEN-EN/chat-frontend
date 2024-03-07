@@ -3,7 +3,7 @@
         {
             "tableName": "tb_chatList",
             "option": {
-                "keyPath": "uuid"
+                "autoIncrement": true
             },
             "index": [
                 {
@@ -31,8 +31,8 @@
                     "keyPath": "uuid"
                 },
                 {
-                    "name": "isreaded",
-                    "keyPath": "isreaded"
+                    "name": "unreadnums",
+                    "keyPath": "unreadnums"
                 }
             ]
         }
