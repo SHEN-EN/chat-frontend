@@ -10,7 +10,11 @@ const login = (params) =>{
 const editUserInfo  = (params) =>{
     return request.put('/users/editUserInfo',params)
 }
-const getUserInfo = () =>{
+const getInfo = (uuid?:string) =>{
+    if(uuid){
+        return request.get(`/users/getUserInfo?uuid=${uuid}`)
+    }
+
     return request.get(`/users/getUserInfo`)
 }
 const getPublicKey = ()=>{
@@ -20,6 +24,6 @@ export default {
     register,
     login,
     editUserInfo,
-    getUserInfo,
+    getInfo,
     getPublicKey
 }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import addFriends from '@/modal/add-friends.vue'
 import editInfo from '@/modal/edit-info.vue'
-import userRequestModel from '@/api/modules/user'
 import user from '@/components/user.vue'
 import { useGlobalStore } from '@/stores/modules/global'
 import { useChatStore } from '@/stores/modules/chat'
@@ -10,7 +9,7 @@ import { storeToRefs } from 'pinia'
 import { RouterView } from 'vue-router'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 const { emitJoinSocket } = useEmitSocket()
-const { setUserInfo, globalModal } = useGlobalStore()
+const { globalModal, fetchUserInfo } = useGlobalStore()
 const { chatList } = storeToRefs(useChatStore())
 
 import { get } from '@/indexDB'
@@ -19,14 +18,14 @@ import socket from '@/socket/index'
 import '@/socket/reciveSocket'
 socket.connect()
 
-const fetchUserInfo = () => {
-  userRequestModel.getUserInfo().then((res: { data: { uuid: string } }) => {
-    setUserInfo(res.data)
-    fetchChatList(res.data.uuid)
-  })
+const getUserInfo = async () => {
+  const res = await fetchUserInfo()
+  fetchChatList(res.uuid)
 }
+
 const fetchChatList = async (uuid: string) => {
-  get('tb_chatList', 'uuid', uuid).then((res: any[]) => {
+
+  get('tb_chatList', 'senderuuid', uuid).then((res: any[]) => {
     for (const iterator of res) {
       const {
         lastmessage,
@@ -47,9 +46,10 @@ const fetchChatList = async (uuid: string) => {
       })
     }
   })
+
 }
 onMounted(() => {
-  fetchUserInfo()
+  getUserInfo()
   setTimeout(() => {
     emitJoinSocket()
   }, 1000)

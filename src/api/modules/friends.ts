@@ -17,11 +17,15 @@ const agreeApply = (uuid:string) =>{
 const clearApplyList = () =>{
     return request.delete('/friends/clearApplyList')
 }
+const updateFriendNotes = (uuid:string,notes:string) =>{
+    return request.put(`/friends/setFriendNotes?uuid=${uuid}&notes=${notes}`)
+}
 export default {
     getList,
     findFriends,
     addFriend,
     getApplyList,
     agreeApply,
-    clearApplyList
+    clearApplyList,
+    updateFriendNotes,
 }

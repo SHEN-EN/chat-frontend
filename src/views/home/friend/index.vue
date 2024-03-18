@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGlobalStore } from '@/stores/modules/global'
 import newFriend from './new-friend.vue'
+import friendInfo from './friend-info.vue'
+
 import mainWrapper from '@/components/main-wrapper.vue'
 const { getFriendsList } = useGlobalStore()
 const { characterMap } = storeToRefs(useGlobalStore())
@@ -15,6 +17,12 @@ getFriendList()
 const activeRoute = ref()
 const navigatorComponents = (name: any) => {
   activeRoute.value = name
+  console.log(activeRoute)
+}
+const uuid = ref()
+const handleClick = (id: string) => {
+  uuid.value = id
+  navigatorComponents(friendInfo)
 }
 </script>
 
@@ -40,7 +48,7 @@ const navigatorComponents = (name: any) => {
 
           <div class="classification" v-for="item,key in characterMap" :key="key">
             <div class="title">{{ key }}</div>
-            <div class="classification-item" v-for="friend in item">
+            <div class="classification-item" v-for="friend in item" @click="handleClick(friend.uuid)">
               <el-avatar :size="40" :src="friend.avatar" />
               <div class="name">{{ friend.username }}</div>
             </div>
@@ -49,8 +57,8 @@ const navigatorComponents = (name: any) => {
       </div>
     </template>
     <template #right>
-      <div class="contact-detail">
-        <component :is="activeRoute" @refresh="getFriendList"></component>
+      <div class="contact-detail" :style="{'background':activeRoute?.__name==='friend-info' ? '#fff' : '#ffefef'}">
+        <component :is="activeRoute" @refresh="getFriendList" :uuid="uuid"></component>
       </div>
     </template>
   </main-wrapper>

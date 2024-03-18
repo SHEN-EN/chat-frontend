@@ -20,7 +20,6 @@ const openDatabase = (databaseName: string, version?: number) => {
   dbName = databaseName;
   return new Promise<IDBDatabase>((resolve, reject) => {
     indexDB = window.indexedDB.open(databaseName, version || 1);
-
     indexDB.onerror = (e) => {
       reject(e);
     };
@@ -119,7 +118,5 @@ const get = async (name: string, key: string,value:string): Promise<any> => {
   });
 };
 
-const findRange = () =>{
-    
-}
+
 export { openDatabase, createTable, insert, update, deleted, get };

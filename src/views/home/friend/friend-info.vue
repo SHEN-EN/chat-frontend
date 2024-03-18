@@ -1,0 +1,191 @@
+<script setup lang="ts">
+import { useGlobalStore } from '@/stores/modules/global'
+import { useChatStore } from '@/stores/modules/chat'
+
+import { ref } from 'vue'
+import { insert, get } from '@/indexDB'
+import userRequestModel from '@/api/modules/user'
+import friendRequestModel from '@/api/modules/friends'
+const { getUserInfo } = useGlobalStore()
+const { chatList } = useChatStore()
+const props = defineProps({
+  uuid: {
+    type: String,
+    default: '',
+  },
+})
+const user = ref<
+  Partial<{
+    account: string
+    avatar: string
+    birthday: number
+    description: string
+    notes: string
+    sex: number
+    username: string
+    uuid: string
+  }>
+>({})
+const fetchInfo = async () => {
+  user.value = (await userRequestModel.getInfo(props.uuid)).data
+}
+const isEditNotes = ref(false)
+const editUserNotes = ref('')
+const handleSetUserNotes = () => {
+  isEditNotes.value = !isEditNotes.value
+
+  if (editUserNotes.value && !isEditNotes.value) {
+    modifyUserNotes()
+  }
+}
+const modifyUserNotes = () => {
+  friendRequestModel
+    .updateFriendNotes(user.value!.uuid, editUserNotes.value)
+    .then((res) => {})
+}
+const handleSend = () => {
+  const { uuid, username } = getUserInfo()
+
+  get('tb_chatList', 'senderuuid', uuid).then((res: any[]) => {
+    if (!res.find((item) => item.uuid == user.value.uuid).length) {
+      // 判断是否有重复的聊天记录
+      // 没有则插入记录
+      insert('tb_chatList', {
+        lastmessage: '',
+        lasttime: Date.now(),
+        sendername: username,
+        uuid: user.value.uuid,
+        senderuuid: uuid,
+        unreadnums: 0,
+      })
+    }
+  })
+}
+fetchInfo()
+</script>
+
+<template>
+  <div class="container">
+    <div class="account-view">
+      <div class="avatar">
+        <img :src="user.avatar">
+      </div>
+      <div class="content">
+        <div class="username">{{ user.username }}</div>
+        <div class="account">账号:{{ user.account }}</div>
+        <div class="description">个性签名:{{ user.description }}</div>
+        <div></div>
+      </div>
+    </div>
+    <div class="account-otherinfo">
+      <div class="item notes">
+        <div class="key">
+          <i class="iconfont icon-edit"></i>
+          备注
+        </div>
+        <div class="value">
+          <template v-if="!isEditNotes">
+            <div @click="handleSetUserNotes">
+              {{ user.notes  || '设置好友备注'}}
+            </div>
+          </template>
+          <el-input v-model="editUserNotes" v-else @blur="handleSetUserNotes" autofocus></el-input>
+        </div>
+      </div>
+
+      <div class="item dynamic">
+        <div class="key">
+          <i class="iconfont icon-kongjianpu"></i>
+          动态
+        </div>
+        <div class="value">
+          <i class="iconfont icon-arrow"></i>
+        </div>
+      </div>
+    </div>
+    <div class="account-action">
+      <el-button>音视频通话</el-button>
+      <el-button type="primary" @click="handleSend">发消息</el-button>
+    </div>
+    <div>
+
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.container {
+  padding: 100px 20px 20px 50px;
+  .account-view {
+    display: flex;
+    position: relative;
+    .avatar img {
+      border-radius: 50%;
+      width: 80px;
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      margin-left: 10px;
+      .username {
+        font-size: 20px;
+      }
+      .account {
+        font-size: 12px;
+        color: #9e9797;
+      }
+      .description {
+        font-size: 12px;
+        color: #9e9797;
+      }
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: #ffefef;
+      bottom: -15px;
+    }
+  }
+  .account-otherinfo {
+    margin-top: 30px;
+    color: #9e9797;
+    padding-left: 20px;
+    .item {
+      position: relative;
+      display: flex;
+      font-size: 14px;
+      line-height: 50px;
+      height: 50px;
+      .key {
+        flex: 1;
+      }
+      .value {
+        flex: 1;
+        justify-content: end;
+        display: flex;
+        cursor: pointer;
+        align-items: center;
+        .el-input {
+          height: 30px;
+        }
+      }
+      &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background: #ffefef;
+        bottom: 0;
+      }
+    }
+  }
+  .account-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+}
+</style>

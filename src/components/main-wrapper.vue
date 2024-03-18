@@ -20,13 +20,13 @@ import searchPlugin from './search-plugin.vue'
   .chat-list {
     width: 260px;
     background: #fff;
+    border-right: 1px solid #f8eded;
     padding-top: 20px;
 
     .top {
       padding: 0 15px 10px 15px;
       display: flex;
       align-items: center;
-
     }
   }
 }

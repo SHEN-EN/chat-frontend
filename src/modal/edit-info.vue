@@ -5,7 +5,8 @@ import userRequestModel from '@/api/modules/user'
 import { useGlobalStore } from '@/stores/modules/global'
 import uploadFile from '@/util/uploadFile'
 import convertBase64 from '@/util/convertBase64'
-const { globalModal, getUserInfo, setGlobalModal } = useGlobalStore()
+const { globalModal, getUserInfo, setGlobalModal, fetchUserInfo } =
+  useGlobalStore()
 
 const userInfo = ref({
   username: '',
@@ -32,6 +33,7 @@ const handleSave = async () => {
       type: 'success',
       message: '修改成功',
     })
+    await fetchUserInfo()
   } catch (error) {
     console.log(error)
   }

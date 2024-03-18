@@ -8,6 +8,7 @@ import chatBubble from './components/chat-bubble.vue'
 import chatInput from './components/chat-input.vue'
 import mainWrapper from '@/components/main-wrapper.vue'
 const drawer = ref(false)
+import { useRouter } from 'vue-router'
 const { chatData, chatList } = useChatStore()
 const { getUserInfo } = useGlobalStore()
 
