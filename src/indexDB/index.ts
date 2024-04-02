@@ -95,20 +95,19 @@ const deleted = async (name: string, keyToDelete: string) => {
   });
 };
 
-const get = async (name: string, key: string,value:string): Promise<any> => {
+const get = async (name: string, key: string, value: string): Promise<any> => {
   const store = await getStore(name);
   return new Promise((resolve, reject) => {
-
     const index = store.index(key);
     const request = index.openCursor(value);
 
-    let result = [] as any
+    let result = [] as any;
     request.onsuccess = (event: anyEvent) => {
       const data = event.target.result;
-      if(data){
-        result.push(data.value)
+      if (data) {
+        result.push(data.value);
         data.continue();
-      }else{
+      } else {
         return resolve(result);
       }
     };
@@ -118,5 +117,19 @@ const get = async (name: string, key: string,value:string): Promise<any> => {
   });
 };
 
+const getAll = async (name: string): Promise<any> => {
+  const store = await getStore(name);
+  return new Promise((resolve, reject) => {
+    const request = store.getAll();
 
-export { openDatabase, createTable, insert, update, deleted, get };
+    request.onsuccess = (event: anyEvent) => {
+      const data = event.target.result;
+      return resolve(data);
+    };
+    request.onerror = (event: anyEvent) => {
+      return reject(event);
+    };
+  });
+};
+
+export { openDatabase, createTable, insert, update, deleted, get, getAll };

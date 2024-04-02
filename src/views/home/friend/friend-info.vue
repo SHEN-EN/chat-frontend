@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { useGlobalStore } from '@/stores/modules/global'
-import { useChatStore } from '@/stores/modules/chat'
-
+import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { insert, get } from '@/indexDB'
-import userRequestModel from '@/api/modules/user'
 import friendRequestModel from '@/api/modules/friends'
-const { getUserInfo } = useGlobalStore()
-const { chatList } = useChatStore()
+const router = useRouter()
 const props = defineProps({
-  uuid: {
-    type: String,
+  friend: {
+    type: Object,
     default: '',
   },
 })
@@ -25,10 +21,10 @@ const user = ref<
     username: string
     uuid: string
   }>
->({})
-const fetchInfo = async () => {
-  user.value = (await userRequestModel.getInfo(props.uuid)).data
-}
+>()
+
+user.value = props.friend
+
 const isEditNotes = ref(false)
 const editUserNotes = ref('')
 const handleSetUserNotes = () => {
@@ -44,24 +40,29 @@ const modifyUserNotes = () => {
     .then((res) => {})
 }
 const handleSend = () => {
-  const { uuid, username } = getUserInfo()
-
-  get('tb_chatList', 'senderuuid', uuid).then((res: any[]) => {
-    if (!res.find((item) => item.uuid == user.value.uuid).length) {
+  const { uuid, username, notes, avatar } = user.value
+  get('tb_chatList', 'uuid', uuid!).then((res: any[]) => {
+    if (res.findIndex((item) => item.uuid == user.value.uuid) == -1) {
       // 判断是否有重复的聊天记录
       // 没有则插入记录
       insert('tb_chatList', {
         lastmessage: '',
         lasttime: Date.now(),
-        sendername: username,
+        username: notes || username,
         uuid: user.value.uuid,
-        senderuuid: uuid,
         unreadnums: 0,
+        avatar,
       })
     }
+
+    router.push({
+      name: 'chat',
+      query: {
+        uuid,
+      },
+    })
   })
 }
-fetchInfo()
 </script>
 
 <template>
@@ -86,7 +87,7 @@ fetchInfo()
         <div class="value">
           <template v-if="!isEditNotes">
             <div @click="handleSetUserNotes">
-              {{ user.notes  || '设置好友备注'}}
+              {{ user.notes || '设置好友备注' }}
             </div>
           </template>
           <el-input v-model="editUserNotes" v-else @blur="handleSetUserNotes" autofocus></el-input>
@@ -116,30 +117,37 @@ fetchInfo()
 <style lang="scss" scoped>
 .container {
   padding: 100px 20px 20px 50px;
+
   .account-view {
     display: flex;
     position: relative;
+
     .avatar img {
       border-radius: 50%;
       width: 80px;
     }
+
     .content {
       display: flex;
       flex-direction: column;
       justify-content: space-around;
       margin-left: 10px;
+
       .username {
         font-size: 20px;
       }
+
       .account {
         font-size: 12px;
         color: #9e9797;
       }
+
       .description {
         font-size: 12px;
         color: #9e9797;
       }
     }
+
     &::before {
       content: '';
       position: absolute;
@@ -149,29 +157,35 @@ fetchInfo()
       bottom: -15px;
     }
   }
+
   .account-otherinfo {
     margin-top: 30px;
     color: #9e9797;
     padding-left: 20px;
+
     .item {
       position: relative;
       display: flex;
       font-size: 14px;
       line-height: 50px;
       height: 50px;
+
       .key {
         flex: 1;
       }
+
       .value {
         flex: 1;
         justify-content: end;
         display: flex;
         cursor: pointer;
         align-items: center;
+
         .el-input {
           height: 30px;
         }
       }
+
       &::before {
         content: '';
         position: absolute;
@@ -182,6 +196,7 @@ fetchInfo()
       }
     }
   }
+
   .account-action {
     display: flex;
     justify-content: center;

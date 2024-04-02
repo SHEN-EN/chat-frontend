@@ -3,53 +3,17 @@ import addFriends from '@/modal/add-friends.vue'
 import editInfo from '@/modal/edit-info.vue'
 import user from '@/components/user.vue'
 import { useGlobalStore } from '@/stores/modules/global'
-import { useChatStore } from '@/stores/modules/chat'
 import { onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
 import { RouterView } from 'vue-router'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 const { emitJoinSocket } = useEmitSocket()
 const { globalModal, fetchUserInfo } = useGlobalStore()
-const { chatList } = storeToRefs(useChatStore())
-
-import { get } from '@/indexDB'
-
 import socket from '@/socket/index'
-import '@/socket/reciveSocket'
 socket.connect()
+import '@/socket/reciveSocket'
 
-const getUserInfo = async () => {
-  const res = await fetchUserInfo()
-  fetchChatList(res.uuid)
-}
-
-const fetchChatList = async (uuid: string) => {
-
-  get('tb_chatList', 'senderuuid', uuid).then((res: any[]) => {
-    for (const iterator of res) {
-      const {
-        lastmessage,
-        lasttime,
-        sendername,
-        senderuuid,
-        unreadnums,
-        uuid,
-        avatar,
-      } = iterator
-
-      chatList.value.push({
-        time: lasttime,
-        uuid: senderuuid,
-        username: sendername,
-        data: lastmessage,
-        avatar,
-      })
-    }
-  })
-
-}
-onMounted(() => {
-  getUserInfo()
+onMounted(async () => {
+  await fetchUserInfo()
   setTimeout(() => {
     emitJoinSocket()
   }, 1000)

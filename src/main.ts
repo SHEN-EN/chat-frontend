@@ -10,7 +10,6 @@ import "//at.alicdn.com/t/c/font_4383173_fo0l50dgsda.js";
 import "./assets/reset.scss";
 const app = createApp(App);
 import table from "./indexDB/db.json";
-
 app.use(createPinia());
 app.use(router);
 app.use(ElementPlus);
@@ -18,4 +17,3 @@ app.use(ElementPlus);
 app.mount("#app");
 openDatabase("chat",1)
 createTable(table.tableOptions)
-

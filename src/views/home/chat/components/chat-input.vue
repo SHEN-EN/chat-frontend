@@ -4,19 +4,29 @@ import { Promotion } from '@element-plus/icons-vue'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 import { useChatStore } from '@/stores/modules/chat'
 import { useGlobalStore } from '@/stores/modules/global'
-import richTextEditor from '@/components/rich-text-editor.vue'
 const { getUserInfo } = useGlobalStore()
 const { setChatData } = useChatStore()
 const senderValue = ref('')
 const { emitPrivateSocket } = useEmitSocket()
+
+const props = defineProps({
+  user: {
+    type: Object,
+    default: {},
+  },
+})
+
 const handleSendMessage = async () => {
   const messsgae = {
     data: senderValue.value,
     time: Date.now(),
     senderId: getUserInfo().uuid,
+    avatar: props.user.avatar,
+    reciverId: props.user.uuid,
   }
   setChatData(messsgae)
-  emitPrivateSocket(senderValue.value, '18b486bb-2884-4957-bafc-376cfcbb456e')
+
+  emitPrivateSocket(messsgae)
   senderValue.value = ''
 }
 </script>

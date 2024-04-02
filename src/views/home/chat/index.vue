@@ -1,21 +1,25 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { ref, computed, watch } from 'vue'
 import { useChatStore } from '@/stores/modules/chat'
 import { useGlobalStore } from '@/stores/modules/global'
 import type { chatDataType } from '@/types/global'
-
 import chatBubble from './components/chat-bubble.vue'
 import chatInput from './components/chat-input.vue'
 import mainWrapper from '@/components/main-wrapper.vue'
+import { storeToRefs } from 'pinia'
+import { getAll } from '@/indexDB'
+
 const drawer = ref(false)
-import { useRouter } from 'vue-router'
-const { chatData, chatList } = useChatStore()
+const { chatData } = useChatStore()
 const { getUserInfo } = useGlobalStore()
+const { chatList } = storeToRefs(useChatStore())
 
-const handleSelectChat = () => {}
+const route = useRoute()
 
-const userUuid = ref('')
-userUuid.value = getUserInfo().uuid
+const uuid = route.query?.uuid || ''
+
+const currentChatUser = ref({})
 
 const rebuildChatData = computed(
   (): {
@@ -24,7 +28,7 @@ const rebuildChatData = computed(
   }[] => {
     return chatData.map((item: chatDataType) => {
       return {
-        isSender: item.senderId === userUuid.value ? true : false,
+        isSender: item.senderId === getUserInfo().uuid ? true : false,
         message: item.data,
       }
     })
@@ -48,13 +52,39 @@ const timestampToDateString = (timestamp: number): string => {
     return `${year}-${month}-${day}`
   }
 }
+
+const fetchChatList = async () => {
+  // 获取用户聊天的列表
+  getAll('tb_chatList').then((res: any[]) => {
+    chatList.value = res.map((item) => {
+      const { lastmessage, lasttime, username, uuid, avatar, unreadnums } = item
+      return {
+        data: lastmessage,
+        time: lasttime,
+        uuid,
+        username,
+        avatar,
+        unreadnums,
+      }
+    })
+  })
+}
+
+const handleSelectChat = (user) => {
+  currentChatUser.value = user
+}
+
+fetchChatList()
+
+const fetchChatDetail = (uuid: string) => {}
+uuid && fetchChatDetail(uuid as string)
 </script>
 
 <template>
   <main-wrapper>
     <template #list>
       <div class="list" v-if="chatList.length > 0">
-        <div class="item" @click="handleSelectChat(item.reciverId)" v-for="item in chatList" :key="item.senderId">
+        <div :class="['item',uuid == item?.uuid ?'active' : '']" @click="handleSelectChat(item)" v-for="item in chatList" :key="item.senderId">
           <div>
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
           </div>
@@ -62,7 +92,10 @@ const timestampToDateString = (timestamp: number): string => {
             <div class="item-title">{{ item.username }}</div>
             <div class="item-text">{{ item.data}}</div>
           </div>
-          <div class="time">{{ timestampToDateString(item.time)  }}</div>
+          <div class="status">
+            <div class="time">{{ timestampToDateString(item.time)  }}</div>
+            <div class="unread-nums">{{ item.unreadnums }}</div>
+          </div>
         </div>
       </div>
       <div class="not-message" v-else>
@@ -70,10 +103,10 @@ const timestampToDateString = (timestamp: number): string => {
       </div>
     </template>
     <template #right>
-      <div class="chat">
+      <div class="chat" v-if="currentChatUser.uuid">
         <div class="top">
           <div class="name">
-            Electron 吹牛群
+            {{currentChatUser.username}}
           </div>
           <div class="event">
             <i class="iconfont icon-dianhua"></i>
@@ -91,7 +124,7 @@ const timestampToDateString = (timestamp: number): string => {
           </el-scrollbar>
         </div>
         <div class="chat-input">
-          <chat-input></chat-input>
+          <chat-input :user="currentChatUser"></chat-input>
         </div>
       </div>
     </template>
@@ -103,7 +136,12 @@ const timestampToDateString = (timestamp: number): string => {
 .list {
   display: flex;
   flex-direction: column;
-
+  .active {
+    background-color: #cfcccb !important;
+    &:hover {
+      @extend .active;
+    }
+  }
   .item {
     display: flex;
     align-items: center;
@@ -138,10 +176,27 @@ const timestampToDateString = (timestamp: number): string => {
         color: #b1acac;
       }
     }
-    .time {
-      font-size: 10px;
-      color: #b1acac;
+    .status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .time {
+        font-size: 10px;
+        color: #b1acac;
+      }
+      .unread-nums {
+        font-size: 10px;
+        margin-top: 5px;
+        text-align: center;
+        line-height: 15px;
+        width: 20px;
+        height: 15px;
+        border-radius: 15px;
+        background-color: red;
+        color: #fff;
+      }
     }
+
     &:hover {
       background: #dedede;
     }

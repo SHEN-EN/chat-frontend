@@ -5,11 +5,14 @@ const { getUserInfo } = useGlobalStore();
 let user: Partial<userInfo> = getUserInfo();
 
 export const useEmitSocket = () => {
-  const emitPrivateSocket = (data: string, reciverId: string) => {
-    const message = {
-      data,
-      reciverId,
-    };
+  const emitPrivateSocket = (message:{
+    data:String
+    time:Number
+    senderId:String
+    avatar:String
+    reciverId:String
+  }) => {
+    debugger
     socketInstance.emit("private-chat", message);
   };
 

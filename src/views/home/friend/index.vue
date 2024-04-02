@@ -17,11 +17,10 @@ getFriendList()
 const activeRoute = ref()
 const navigatorComponents = (name: any) => {
   activeRoute.value = name
-  console.log(activeRoute)
 }
-const uuid = ref()
-const handleClick = (id: string) => {
-  uuid.value = id
+const friend = ref()
+const handleClick = (item) => {
+  friend.value = item
   navigatorComponents(friendInfo)
 }
 </script>
@@ -48,7 +47,7 @@ const handleClick = (id: string) => {
 
           <div class="classification" v-for="item,key in characterMap" :key="key">
             <div class="title">{{ key }}</div>
-            <div class="classification-item" v-for="friend in item" @click="handleClick(friend.uuid)">
+            <div class="classification-item" v-for="friend in item" @click="handleClick(friend)">
               <el-avatar :size="40" :src="friend.avatar" />
               <div class="name">{{ friend.username }}</div>
             </div>
@@ -58,7 +57,7 @@ const handleClick = (id: string) => {
     </template>
     <template #right>
       <div class="contact-detail" :style="{'background':activeRoute?.__name==='friend-info' ? '#fff' : '#ffefef'}">
-        <component :is="activeRoute" @refresh="getFriendList" :uuid="uuid"></component>
+        <component :is="activeRoute" @refresh="getFriendList" :friend="friend"></component>
       </div>
     </template>
   </main-wrapper>

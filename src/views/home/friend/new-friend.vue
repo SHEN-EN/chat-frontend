@@ -3,12 +3,29 @@ import { ref } from 'vue'
 import { useEmitSocket } from '@/hooks/useEmitSocket'
 import { ElMessageBox } from 'element-plus'
 import friendRequestModel from '@/api/modules/friends'
+import userRequestModel from '@/api/modules/user'
+import { useGlobalStore } from '@/stores/modules/global'
+
 const { emitAgreeFriendApply } = useEmitSocket()
+const { getUserInfo } = useGlobalStore()
+
 const emit = defineEmits(['refresh'])
 const list = ref([])
 const getList = () => {
-  friendRequestModel.getApplyList().then((res) => {
-    list.value = res.data
+  friendRequestModel.getApplyList().then(async (res) => {
+    list.value = await Promise.all(
+      res.data.map(async (item) => {
+        const { avatar, username } = (
+          await userRequestModel.getInfo(item.frienduuid)
+        ).data
+
+        return {
+          ...item,
+          avatar,
+          username,
+        }
+      })
+    )
   })
 }
 const handleAgree = async (uuid: string, avatar: string) => {
@@ -43,19 +60,19 @@ getList()
     <div class="list">
       <div class="item" v-for="item in list" :key="item.uuid">
         <div class="info">
-          <img class="avatar" :src="item.friendAvatar" alt="">
+          <img class="avatar" :src="item.avatar" alt="">
           <div class="block">
             <div class="name">
-              {{item.friendUsername}}
+              {{item.username}}
 
-              <span>{{item.uuid != item.applicantuuid ? '请求加为好友' : '正在验证你的邀请'}}</span>
+              <span>{{!item.isapplyUser ? '请求加为好友' : '正在验证你的邀请'}}</span>
             </div>
             <div class="time">{{ item.time }}</div>
           </div>
         </div>
 
         <template v-if="item.isAgree == 0">
-          <template v-if="item.uuid != item.applicantuuid">
+          <template v-if="!item.isapplyUser">
             <el-button size="small" type="primary" @click="handleAgree(item.frienduuid,item.friendAvatar)">同意</el-button>
           </template>
           <template v-else>

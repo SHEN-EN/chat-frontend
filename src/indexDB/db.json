@@ -19,12 +19,8 @@
                     "keyPath": "lasttime"
                 },
                 {
-                    "name": "sendername",
-                    "keyPath": "sendername"
-                },
-                {
-                    "name": "senderuuid",
-                    "keyPath": "senderuuid"
+                    "name": "username",
+                    "keyPath": "username"
                 },
                 {
                     "name": "uuid",
