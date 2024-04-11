@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useIpcRenderer } from '@/hooks/useIpcRenderer'
 import { useRoute } from 'vue-router'
 import { ref, computed, watch } from 'vue'
 import { useChatStore } from '@/stores/modules/chat'
@@ -8,18 +9,17 @@ import chatBubble from './components/chat-bubble.vue'
 import chatInput from './components/chat-input.vue'
 import mainWrapper from '@/components/main-wrapper.vue'
 import { storeToRefs } from 'pinia'
-import { getAll } from '@/indexDB'
-
+const { invokeEvent } = useIpcRenderer()
 const drawer = ref(false)
 const { chatData } = useChatStore()
 const { getUserInfo } = useGlobalStore()
 const { chatList } = storeToRefs(useChatStore())
 
+const { chatUser } = storeToRefs(useGlobalStore())
+
 const route = useRoute()
 
 const uuid = route.query?.uuid || ''
-
-const currentChatUser = ref({})
 
 const rebuildChatData = computed(
   (): {
@@ -38,7 +38,6 @@ const timestampToDateString = (timestamp: number): string => {
   const currentDate = new Date()
   const targetDate = new Date(timestamp)
   const diffTime = currentDate.getTime() - timestamp
-
   if (diffTime < 86400000) {
     const hours = String(targetDate.getHours()).padStart(2, '0')
     const minutes = String(targetDate.getMinutes()).padStart(2, '0')
@@ -49,29 +48,33 @@ const timestampToDateString = (timestamp: number): string => {
     const year = targetDate.getFullYear()
     const month = String(targetDate.getMonth() + 1).padStart(2, '0')
     const day = String(targetDate.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
+    return `${year}/${month}/${day}`
   }
 }
 
 const fetchChatList = async () => {
   // 获取用户聊天的列表
-  getAll('tb_chatList').then((res: any[]) => {
-    chatList.value = res.map((item) => {
-      const { lastmessage, lasttime, username, uuid, avatar, unreadnums } = item
-      return {
-        data: lastmessage,
-        time: lasttime,
-        uuid,
-        username,
-        avatar,
-        unreadnums,
-      }
-    })
-  })
+  invokeEvent('rundb', { query: 'select * from tb_chatList' }).then(
+    (result) => {
+      chatList.value = result.map((item) => {
+        const { lastmessage, lasttime, username, uuid, avatar, unreadnums } =
+          item
+        return {
+          data: lastmessage,
+          time: Number(lasttime),
+          uuid,
+          username,
+          avatar,
+          unreadnums: Number(unreadnums),
+        }
+      })
+    }
+  )
 }
 
-const handleSelectChat = (user) => {
-  currentChatUser.value = user
+const handleSelectChat = (user: chatDataType) => {
+  chatUser.value = user
+  console.log(chatUser.value)
 }
 
 fetchChatList()
@@ -84,17 +87,17 @@ uuid && fetchChatDetail(uuid as string)
   <main-wrapper>
     <template #list>
       <div class="list" v-if="chatList.length > 0">
-        <div :class="['item',uuid == item?.uuid ?'active' : '']" @click="handleSelectChat(item)" v-for="item in chatList" :key="item.senderId">
+        <div :class="['item', uuid == item?.uuid ? 'active' : '']" @click="handleSelectChat(item)" v-for="item in chatList" :key="item.senderId">
           <div>
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
           </div>
           <div class="content">
-            <div class="item-title">{{ item.username }}</div>
-            <div class="item-text">{{ item.data}}</div>
+            <div class="item-title">{{ item!.username }}</div>
+            <div class="item-text">{{ item!.data }}</div>
           </div>
           <div class="status">
-            <div class="time">{{ timestampToDateString(item.time)  }}</div>
-            <div class="unread-nums">{{ item.unreadnums }}</div>
+            <div class="time">{{ timestampToDateString(item!.time) }}</div>
+            <div class="unread-nums" v-show="item!.unreadnums">{{ item!.unreadnums }}</div>
           </div>
         </div>
       </div>
@@ -103,10 +106,10 @@ uuid && fetchChatDetail(uuid as string)
       </div>
     </template>
     <template #right>
-      <div class="chat" v-if="currentChatUser.uuid">
+      <div class="chat" v-if="chatUser.uuid">
         <div class="top">
           <div class="name">
-            {{currentChatUser.username}}
+            {{ chatUser.username }}
           </div>
           <div class="event">
             <i class="iconfont icon-dianhua"></i>
@@ -124,7 +127,7 @@ uuid && fetchChatDetail(uuid as string)
           </el-scrollbar>
         </div>
         <div class="chat-input">
-          <chat-input :user="currentChatUser"></chat-input>
+          <chat-input :user="chatUser"></chat-input>
         </div>
       </div>
     </template>
@@ -136,12 +139,15 @@ uuid && fetchChatDetail(uuid as string)
 .list {
   display: flex;
   flex-direction: column;
+
   .active {
     background-color: #cfcccb !important;
+
     &:hover {
       @extend .active;
     }
   }
+
   .item {
     display: flex;
     align-items: center;
@@ -158,6 +164,7 @@ uuid && fetchChatDetail(uuid as string)
       flex-direction: column;
       height: 100%;
       justify-content: space-evenly;
+
       .item-title {
         font-size: 14px;
         margin-bottom: 5px;
@@ -176,20 +183,23 @@ uuid && fetchChatDetail(uuid as string)
         color: #b1acac;
       }
     }
+
     .status {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: flex-end;
+
       .time {
         font-size: 10px;
         color: #b1acac;
       }
+
       .unread-nums {
         font-size: 10px;
         margin-top: 5px;
         text-align: center;
         line-height: 15px;
-        width: 20px;
+        width: 15px;
         height: 15px;
         border-radius: 15px;
         background-color: red;
@@ -202,6 +212,7 @@ uuid && fetchChatDetail(uuid as string)
     }
   }
 }
+
 .not-message {
   font-size: 12px;
   display: flex;
@@ -211,6 +222,7 @@ uuid && fetchChatDetail(uuid as string)
   justify-content: center;
   width: 100%;
 }
+
 .chat {
   flex: 1;
   background: #f8eded;

@@ -12,7 +12,6 @@ export const useEmitSocket = () => {
     avatar:String
     reciverId:String
   }) => {
-    debugger
     socketInstance.emit("private-chat", message);
   };
 

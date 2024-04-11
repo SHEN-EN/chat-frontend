@@ -16,7 +16,7 @@ onMounted(async () => {
   await fetchUserInfo()
   setTimeout(() => {
     emitJoinSocket()
-  }, 1000)
+  }, 5000)
 })
 </script>
 

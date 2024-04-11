@@ -1,11 +1,50 @@
 "use strict";
 const electron = require("electron");
 const path = require("path");
+const tableOptions = [
+  {
+    tableName: "tb_chatList",
+    option: {
+      autoIncrement: true
+    },
+    index: [
+      {
+        name: "avatar",
+        keyPath: "avatar"
+      },
+      {
+        name: "lastmessage",
+        keyPath: "lastmessage"
+      },
+      {
+        name: "lasttime",
+        keyPath: "lasttime"
+      },
+      {
+        name: "username",
+        keyPath: "username"
+      },
+      {
+        name: "uuid",
+        keyPath: "uuid"
+      },
+      {
+        name: "unreadnums",
+        keyPath: "unreadnums"
+      }
+    ]
+  }
+];
+const table = {
+  tableOptions
+};
 let win;
 electron.app.setPath("userData", `${electron.app.getPath("userData")} - Instance2`);
 const { ipcMain } = require("electron");
-const Store = require("electron-store");
-const electronStore = new Store();
+require("electron-store");
+const dbPath = path.resolve(__dirname, "../src/SQLite/database/ChatMsg.db");
+const sqlite3 = require("sqlite3").verbose();
+const db = new sqlite3.Database(dbPath);
 const createWindow = () => {
   win = new electron.BrowserWindow({
     webPreferences: {
@@ -30,6 +69,7 @@ const receiveEvent = () => {
     win && win.minimize();
   });
   ipcMain.on("quit", () => {
+    db.close();
     electron.app.quit();
   });
   ipcMain.on("maximize", () => {
@@ -57,25 +97,55 @@ const receiveEvent = () => {
       win2.setBounds(newBounds);
     });
   });
-  ipcMain.on("setStore", (event, arg) => {
-    if (!("key" in arg))
-      return;
-    const { key, value } = arg;
-    electronStore.set(key, value);
+  ipcMain.handle("rundb", async (event, options) => {
+    return new Promise((resolve, reject) => {
+      const { query, params } = options;
+      if (query.indexOf("select") !== -1) {
+        db.all(query, params || [], (err, rows) => {
+          if (err) {
+            console.log("error:", err);
+            reject(err);
+          }
+          resolve(rows);
+        });
+      } else {
+        db.run(query, params, (err) => {
+          if (err) {
+            console.log("error:", err);
+            reject(err);
+          }
+          resolve(200);
+        });
+      }
+    });
   });
 };
 const sendEvent = () => {
   ipcMain.handle("get-is-maximized", () => {
     return win ? win.isMaximized() : false;
   });
-  ipcMain.handle("getStore", (event, key) => {
-    if (!key)
-      return;
-    return electronStore.get(key);
+};
+const createSQLiteDatabase = () => {
+  db.serialize(() => {
+    table.tableOptions.forEach((table2) => {
+      const { tableName, index } = table2;
+      let sql = `CREATE TABLE ${tableName} (id INTEGER PRIMARY KEY`;
+      index.forEach(({ name }) => {
+        sql += `, ${name} TEXT`;
+      });
+      sql += ")";
+      db.run(sql, (err) => {
+        if (err) {
+          return console.error(err.message);
+        }
+        console.log(`Table ${tableName} created successfully`);
+      });
+    });
   });
 };
 electron.app.whenReady().then(() => {
   createWindow();
   receiveEvent();
   sendEvent();
+  createSQLiteDatabase();
 });

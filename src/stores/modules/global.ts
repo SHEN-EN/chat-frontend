@@ -82,6 +82,8 @@ export const useGlobalStore = defineStore("global", () => {
     classifyCharacters();
   };
 
+  const chatUser = ref({}) // 当前聊天用户的信息
+  
   return {
     authorization,
     setAuthorization,
@@ -95,5 +97,6 @@ export const useGlobalStore = defineStore("global", () => {
     getFriendsList,
     characterMap,
     fetchUserInfo,
+    chatUser,
   };
 });

@@ -19,3 +19,4 @@ export type chatListType = {
     data:any
     avatar:string
 }
+export enum SQLiteEvent = INSERT | UPDATE | DELETE | SELECT 

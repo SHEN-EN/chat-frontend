@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useIpcRenderer } from '@/hooks/useIpcRenderer'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import { insert, get } from '@/indexDB'
 import friendRequestModel from '@/api/modules/friends'
 const router = useRouter()
+const { invokeEvent } = useIpcRenderer()
+
 const props = defineProps({
   friend: {
     type: Object,
@@ -41,17 +43,19 @@ const modifyUserNotes = () => {
 }
 const handleSend = () => {
   const { uuid, username, notes, avatar } = user.value
-  get('tb_chatList', 'uuid', uuid!).then((res: any[]) => {
-    if (res.findIndex((item) => item.uuid == user.value.uuid) == -1) {
+
+  invokeEvent('rundb', {
+    query: 'select * from tb_chatList where uuid = ?',
+    params: [uuid!],
+  }).then((result: any[]) => {
+    if (result.findIndex((item) => item.uuid == user.value!.uuid) == -1) {
       // 判断是否有重复的聊天记录
       // 没有则插入记录
-      insert('tb_chatList', {
-        lastmessage: '',
-        lasttime: Date.now(),
-        username: notes || username,
-        uuid: user.value.uuid,
-        unreadnums: 0,
-        avatar,
+      invokeEvent('rundb', {
+        query: `insert into tb_chatlist(lastmessage,lasttime,username,uuid,unreadnums,avatar)
+          values(?,?,?,?,?,?)
+          `,
+        params: ['', Date.now(), notes || username, uuid, 0, avatar],
       })
     }
 
