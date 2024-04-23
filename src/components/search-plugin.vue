@@ -23,7 +23,6 @@ const searchValue = ref('')
 </template>
 <style lang="scss" scoped>
 .el-input {
-  max-width: 190px;
   ::v-deep .el-input__wrapper {
     background-color: #f8eded;
   }

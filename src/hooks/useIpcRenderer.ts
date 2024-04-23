@@ -3,8 +3,6 @@ export const useIpcRenderer = () => {
   const sendEvent = <T>(event: string, arg?: T) => {
     if (!event) return;
      ipcRenderer.send(event, arg);
-     console.log(ipcRenderer.send(event, arg));
-     
   };
   const receiveEvent = (event: string, cb?: Function) => {
     if (!event) return;

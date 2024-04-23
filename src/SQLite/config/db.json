@@ -31,6 +31,34 @@
                     "keyPath": "unreadnums"
                 }
             ]
+        },
+        {
+            "tableName": "tb_chatMsg",
+            "option": {
+                "autoIncrement": true
+            },
+            "index": [
+                {
+                    "name": "avatar",
+                    "keyPath": "avatar"
+                },
+                {
+                    "name": "message",
+                    "keyPath": "message"
+                },
+                {
+                    "name": "sendertime",
+                    "keyPath": "sendertime"
+                },
+                {
+                    "name": "uuid",
+                    "keyPath": "uuid"
+                },
+                {
+                    "name": "messagetype",
+                    "keyPath": "messagetype"
+                }
+            ]
         }
     ]
 }

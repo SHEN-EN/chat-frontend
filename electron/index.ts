@@ -4,10 +4,8 @@ import path from "path";
 let win: BrowserWindow | null;
 app.setPath("userData", `${app.getPath("userData")} - Instance2`);
 const { ipcMain } = require("electron");
-const Store = require("electron-store");
-const dbPath = path.resolve(__dirname, "../src/SQLite/database/ChatMsg.db");
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database(dbPath);
+let db = null;
 
 const createWindow = () => {
   win = new BrowserWindow({
@@ -79,7 +77,7 @@ const receiveEvent = () => {
           resolve(rows);
         });
       } else {
-        db.run(query, params, (err) => {
+        db.run(query, params || [], (err) => {
           if (err) {
             console.log("error:", err);
             reject(err);
@@ -88,6 +86,25 @@ const receiveEvent = () => {
         });
       }
     });
+  });
+  ipcMain.handle("initdb", (event, args) => {
+    const fs = require("fs");
+
+    fs.mkdir(
+      path.resolve(__dirname, `../src/SQLite/${args}`),
+      { recursive: true },
+      (err) => {
+        if (err) {
+          console.error("Error creating folder:", err);
+        } else {
+          console.log("Folder created successfully");
+        }
+      }
+    );
+
+    const dbPath = path.resolve(__dirname, `../src/SQLite/${args}/ChatMsg.db`);
+    db = new sqlite3.Database(dbPath);
+    createSQLiteDatabase();
   });
 };
 const sendEvent = () => {
@@ -100,6 +117,8 @@ const createSQLiteDatabase = () => {
   db.serialize(() => {
     table.tableOptions.forEach((table) => {
       const { tableName, index } = table;
+      console.log(tableName);
+      
       let sql = `CREATE TABLE ${tableName} (id INTEGER PRIMARY KEY`;
 
       index.forEach(({ name }) => {
@@ -121,5 +140,4 @@ app.whenReady().then(() => {
   createWindow();
   receiveEvent();
   sendEvent();
-  createSQLiteDatabase();
 });

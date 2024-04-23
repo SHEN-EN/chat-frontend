@@ -11,7 +11,6 @@ import mainWrapper from '@/components/main-wrapper.vue'
 import { storeToRefs } from 'pinia'
 const { invokeEvent } = useIpcRenderer()
 const drawer = ref(false)
-const { chatData } = useChatStore()
 const { getUserInfo } = useGlobalStore()
 const { chatList } = storeToRefs(useChatStore())
 
@@ -21,15 +20,17 @@ const route = useRoute()
 
 const uuid = route.query?.uuid || ''
 
+const chatData = ref([])
+
 const rebuildChatData = computed(
   (): {
     message: any
     isSender: boolean
   }[] => {
-    return chatData.map((item: chatDataType) => {
+    return chatData.value.map((item: chatDataType) => {
       return {
-        isSender: item.senderId === getUserInfo().uuid ? true : false,
-        message: item.data,
+        isSender: item.uuid === getUserInfo().uuid ? true : false,
+        message: item.message,
       }
     })
   }
@@ -54,7 +55,7 @@ const timestampToDateString = (timestamp: number): string => {
 
 const fetchChatList = async () => {
   // 获取用户聊天的列表
-  invokeEvent('rundb', { query: 'select * from tb_chatList' }).then(
+  invokeEvent('rundb', { query: `select * from tb_chatList` }).then(
     (result) => {
       chatList.value = result.map((item) => {
         const { lastmessage, lasttime, username, uuid, avatar, unreadnums } =
@@ -72,9 +73,18 @@ const fetchChatList = async () => {
   )
 }
 
-const handleSelectChat = (user: chatDataType) => {
+const handleSelectChat = async (user: chatDataType, index: number) => {
   chatUser.value = user
-  console.log(chatUser.value)
+  chatList.value[index].unreadnums = 0
+  invokeEvent('rundb', {
+    query: `update tb_chatlist set unreadnums = 0 where uuid = ?`,
+    params: [chatUser.value.uuid],
+  })
+
+  chatData.value = await invokeEvent('rundb', {
+    query: `select * from tb_chatMsg where uuid = ?`,
+    params: [chatUser.value.uuid],
+  })
 }
 
 fetchChatList()
@@ -87,7 +97,7 @@ uuid && fetchChatDetail(uuid as string)
   <main-wrapper>
     <template #list>
       <div class="list" v-if="chatList.length > 0">
-        <div :class="['item', uuid == item?.uuid ? 'active' : '']" @click="handleSelectChat(item)" v-for="item in chatList" :key="item.senderId">
+        <div :class="['item', uuid == item?.uuid ? 'active' : '']" @click="handleSelectChat(item,index)" v-for="item,index in chatList" :key="item.senderId">
           <div>
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
           </div>
@@ -97,7 +107,7 @@ uuid && fetchChatDetail(uuid as string)
           </div>
           <div class="status">
             <div class="time">{{ timestampToDateString(item!.time) }}</div>
-            <div class="unread-nums" v-show="item!.unreadnums">{{ item!.unreadnums }}</div>
+            <div class="unread-nums" v-show="item!.unreadnums">{{ item!.unreadnums > 99 ? '99+' : item!.unreadnums}}</div>
           </div>
         </div>
       </div>
@@ -151,7 +161,6 @@ uuid && fetchChatDetail(uuid as string)
   .item {
     display: flex;
     align-items: center;
-    max-width: 260px;
     height: 65px;
     padding: 10px;
     box-sizing: border-box;
@@ -199,7 +208,8 @@ uuid && fetchChatDetail(uuid as string)
         margin-top: 5px;
         text-align: center;
         line-height: 15px;
-        width: 15px;
+        max-width: 18px;
+        padding: 0 4px;
         height: 15px;
         border-radius: 15px;
         background-color: red;
@@ -227,6 +237,8 @@ uuid && fetchChatDetail(uuid as string)
   flex: 1;
   background: #f8eded;
   padding-top: 20px;
+  display: flex;
+  flex-direction: column;
 
   .top {
     padding: 0 20px;
@@ -260,12 +272,11 @@ uuid && fetchChatDetail(uuid as string)
   }
 
   .chat-content {
-    height: calc(100% - 210px);
+    height: 100%;
     padding-top: 10px;
   }
 
   .chat-input {
-    height: 160px;
     border-top: 1px solid #ebdbdb;
   }
 }

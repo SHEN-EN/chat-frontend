@@ -11,6 +11,7 @@ export type chatDataType = {
     data: any,
     time: number,
     senderId: string,
+    
 }
 export type chatListType = {
     time: number,
@@ -18,5 +19,7 @@ export type chatListType = {
     username:string,
     data:any
     avatar:string
+    unreadnums:number
+    uuid:string
 }
 export enum SQLiteEvent = INSERT | UPDATE | DELETE | SELECT 

@@ -33,6 +33,34 @@ const tableOptions = [
         keyPath: "unreadnums"
       }
     ]
+  },
+  {
+    tableName: "tb_chatMsg",
+    option: {
+      autoIncrement: true
+    },
+    index: [
+      {
+        name: "avatar",
+        keyPath: "avatar"
+      },
+      {
+        name: "message",
+        keyPath: "message"
+      },
+      {
+        name: "sendertime",
+        keyPath: "sendertime"
+      },
+      {
+        name: "uuid",
+        keyPath: "uuid"
+      },
+      {
+        name: "messagetype",
+        keyPath: "messagetype"
+      }
+    ]
   }
 ];
 const table = {
@@ -41,10 +69,8 @@ const table = {
 let win;
 electron.app.setPath("userData", `${electron.app.getPath("userData")} - Instance2`);
 const { ipcMain } = require("electron");
-require("electron-store");
-const dbPath = path.resolve(__dirname, "../src/SQLite/database/ChatMsg.db");
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database(dbPath);
+let db = null;
 const createWindow = () => {
   win = new electron.BrowserWindow({
     webPreferences: {
@@ -109,7 +135,7 @@ const receiveEvent = () => {
           resolve(rows);
         });
       } else {
-        db.run(query, params, (err) => {
+        db.run(query, params || [], (err) => {
           if (err) {
             console.log("error:", err);
             reject(err);
@@ -118,6 +144,23 @@ const receiveEvent = () => {
         });
       }
     });
+  });
+  ipcMain.handle("initdb", (event, args) => {
+    const fs = require("fs");
+    fs.mkdir(
+      path.resolve(__dirname, `../src/SQLite/${args}`),
+      { recursive: true },
+      (err) => {
+        if (err) {
+          console.error("Error creating folder:", err);
+        } else {
+          console.log("Folder created successfully");
+        }
+      }
+    );
+    const dbPath = path.resolve(__dirname, `../src/SQLite/${args}/ChatMsg.db`);
+    db = new sqlite3.Database(dbPath);
+    createSQLiteDatabase();
   });
 };
 const sendEvent = () => {
@@ -129,6 +172,7 @@ const createSQLiteDatabase = () => {
   db.serialize(() => {
     table.tableOptions.forEach((table2) => {
       const { tableName, index } = table2;
+      console.log(tableName);
       let sql = `CREATE TABLE ${tableName} (id INTEGER PRIMARY KEY`;
       index.forEach(({ name }) => {
         sql += `, ${name} TEXT`;
@@ -147,5 +191,4 @@ electron.app.whenReady().then(() => {
   createWindow();
   receiveEvent();
   sendEvent();
-  createSQLiteDatabase();
 });

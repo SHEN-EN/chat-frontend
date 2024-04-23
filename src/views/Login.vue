@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useIpcRenderer } from '@/hooks/useIpcRenderer'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -7,6 +8,7 @@ import userRequestModel from '@/api/modules/user'
 import JSEncrypt from 'jsencrypt'
 
 const crypt = new JSEncrypt()
+const { invokeEvent } = useIpcRenderer()
 
 const { setAuthorization, setUserInfo } = useGlobalStore()
 const router = useRouter()
@@ -52,6 +54,7 @@ const handleLogin = () => {
   userRequestModel
     .login(params)
     .then((res) => {
+      invokeEvent('initdb', res.data.uuid)
       setAuthorization(res.token)
       setUserInfo(res.data)
       router.push({
@@ -84,6 +87,8 @@ const handleRegister = () => {
   userRequestModel
     .register(params)
     .then((res) => {
+      invokeEvent('initdb', res.data.uuid)
+
       setAuthorization(res.token)
       setUserInfo(res.data)
       router.push({
