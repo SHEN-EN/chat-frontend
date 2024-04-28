@@ -12,15 +12,13 @@ import { storeToRefs } from 'pinia'
 const { invokeEvent } = useIpcRenderer()
 const drawer = ref(false)
 const { getUserInfo } = useGlobalStore()
-const { chatList } = storeToRefs(useChatStore())
+const { chatList, chatData } = storeToRefs(useChatStore())
 
 const { chatUser } = storeToRefs(useGlobalStore())
 
 const route = useRoute()
 
 const uuid = route.query?.uuid || ''
-
-const chatData = ref([])
 
 const rebuildChatData = computed(
   (): {
@@ -30,7 +28,7 @@ const rebuildChatData = computed(
     return chatData.value.map((item: chatDataType) => {
       return {
         isSender: item.uuid === getUserInfo().uuid ? true : false,
-        message: item.message,
+        message: item.data,
       }
     })
   }
@@ -75,7 +73,9 @@ const fetchChatList = async () => {
 
 const handleSelectChat = async (user: chatDataType, index: number) => {
   chatUser.value = user
+
   chatList.value[index].unreadnums = 0
+
   invokeEvent('rundb', {
     query: `update tb_chatlist set unreadnums = 0 where uuid = ?`,
     params: [chatUser.value.uuid],

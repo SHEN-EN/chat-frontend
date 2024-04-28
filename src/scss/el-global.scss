@@ -1,0 +1,48 @@
+.sender-multimedia-container {
+    width: 300px;
+
+    .multimedia-container {
+
+        .reciver-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+
+            img {
+                height: 50px;
+            }
+
+            .username {
+                font-size: 14px;
+                margin-left: 10px;
+            }
+        }
+        .multimedia{
+            display: flex;
+            margin-top: 20px;
+            img{
+                width:70px
+            }
+            .multimedia-detail{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                margin-left: 10px;
+                .multimedia-size{
+                    font-size: 12px;
+                    margin-top: 5px;
+                    color: #c7c7c7;
+                }
+            }
+            .iconfont{
+                width:40px;
+                height: 40px;
+            }
+            
+        }
+    }
+    .el-button{
+        height: 28px;
+        width:56px;
+    }
+}

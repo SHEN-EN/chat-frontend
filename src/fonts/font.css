@@ -2,9 +2,9 @@
     font-family: "iconfont"; /* Project id 4383173 */
     /* Color fonts */
     src: 
-         url('//at.alicdn.com/t/c/font_4383173_xf6o5a9f91g.woff2?t=1710746064144') format('woff2'),
-         url('//at.alicdn.com/t/c/font_4383173_xf6o5a9f91g.woff?t=1710746064144') format('woff'),
-         url('//at.alicdn.com/t/c/font_4383173_xf6o5a9f91g.ttf?t=1710746064144') format('truetype');
+         url('//at.alicdn.com/t/c/font_4383173_5bh744ssoiq.woff2?t=1714291216927') format('woff2'),
+         url('//at.alicdn.com/t/c/font_4383173_5bh744ssoiq.woff?t=1714291216927') format('woff'),
+         url('//at.alicdn.com/t/c/font_4383173_5bh744ssoiq.ttf?t=1714291216927') format('truetype');
   }
   
   .iconfont {
@@ -13,6 +13,58 @@
     font-style: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .icon-html:before {
+    content: "\e64f";
+  }
+  
+  .icon-JS:before {
+    content: "\e68d";
+  }
+  
+  .icon-css:before {
+    content: "\e6e1";
+  }
+  
+  .icon-exe:before {
+    content: "\e6e2";
+  }
+  
+  .icon-doc:before {
+    content: "\e6e3";
+  }
+  
+  .icon-mp3:before {
+    content: "\e6e6";
+  }
+  
+  .icon-pdf:before {
+    content: "\e6e7";
+  }
+  
+  .icon-mp4:before {
+    content: "\e6e8";
+  }
+  
+  .icon-ppt:before {
+    content: "\e6ea";
+  }
+  
+  .icon-psd:before {
+    content: "\e6eb";
+  }
+  
+  .icon-txt:before {
+    content: "\e6ed";
+  }
+  
+  .icon-xls:before {
+    content: "\e6ee";
+  }
+  
+  .icon-zip:before {
+    content: "\e620";
   }
   
   .icon-arrow:before {

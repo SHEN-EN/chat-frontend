@@ -30,7 +30,7 @@ export const useGlobalStore = defineStore("global", () => {
 
     return res.data;
   };
-  
+
   const globalModal = ref({
     addFriends: false,
     editInfo: false,
@@ -55,6 +55,7 @@ export const useGlobalStore = defineStore("global", () => {
         username: string;
         avatar: string;
         account: string;
+        notes: string;
       }[]
     >
   >([]);
@@ -64,7 +65,9 @@ export const useGlobalStore = defineStore("global", () => {
   const classifyCharacters = () => {
     characterMap.value = {};
     for (const character of friendsList.value) {
-      const firstLetter = pinyin(character!.username)[0][0].toUpperCase();
+      const firstLetter = pinyin(
+        character!.notes || character!.username
+      )[0][0].toUpperCase();
 
       if (/^[A-Z]$/.test(firstLetter)) {
         if (characterMap.value[firstLetter]) {
@@ -82,8 +85,8 @@ export const useGlobalStore = defineStore("global", () => {
     classifyCharacters();
   };
 
-  const chatUser = ref({}) // 当前聊天用户的信息
-  
+  const chatUser = ref({}); // 当前聊天用户的信息
+
   return {
     authorization,
     setAuthorization,

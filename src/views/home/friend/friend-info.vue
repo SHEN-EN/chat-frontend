@@ -12,8 +12,7 @@ const props = defineProps({
     default: '',
   },
 })
-const user = ref<
-  Partial<{
+type userType = {
     account: string
     avatar: string
     birthday: number
@@ -22,7 +21,9 @@ const user = ref<
     sex: number
     username: string
     uuid: string
-  }>
+}
+const user = ref<
+  Partial<userType>
 >()
 
 user.value = props.friend
@@ -42,7 +43,7 @@ const modifyUserNotes = () => {
     .then((res) => {})
 }
 const handleSend = () => {
-  const { uuid, username, notes, avatar } = user.value
+  const { uuid, username, notes, avatar } = user.value as userType
 
   invokeEvent('rundb', {
     query: 'select * from tb_chatList where uuid = ?',

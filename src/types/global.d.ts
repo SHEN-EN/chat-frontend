@@ -10,8 +10,7 @@ export type userInfo = {
 export type chatDataType = {
     data: any,
     time: number,
-    senderId: string,
-    
+    uuid: string,
 }
 export type chatListType = {
     time: number,

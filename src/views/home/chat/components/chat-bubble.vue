@@ -29,9 +29,18 @@ const props = defineProps({
     <img :src="avatar" alt="Avatar" class="avatar">
     <div>
       <div class="username">{{ username }}</div>
+      <!-- 文字消息 -->
       <div class="message" :class="{ 'left': isSender, 'right': !isSender }">
         {{ message }}
       </div>
+      <!-- 文字消息 -->
+
+      <!-- 文件消息 -->
+      <div class="message file" :class="{ 'left': isSender, 'right': !isSender }">
+
+      </div>
+      <!-- 文件消息 -->
+
     </div>
   </div>
 </template>
@@ -48,8 +57,8 @@ const props = defineProps({
 
   &.left {
     flex-direction: row-reverse;
-    .username{
-        text-align: right;
+    .username {
+      text-align: right;
     }
   }
 
@@ -80,6 +89,18 @@ const props = defineProps({
     &.right {
       background-color: #fff;
       color: #333;
+    }
+  }
+
+  .file {
+    width: 200px;
+    height: 70px;
+    &.left {
+      background-color: #fff;
+    }
+
+    &.right {
+      background-color: #fff;
     }
   }
 }
