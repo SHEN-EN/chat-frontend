@@ -1,4 +1,4 @@
-export const fileType = {
+ const fileType = {
   "txt": "icon-txt",
   "html": "icon-html",
   "css": "icon-css",
@@ -20,3 +20,8 @@ export const fileType = {
   "gz": "icon-zip",
   "tar": "icon-zip",
 };
+const imageSuffix = ['jpeg', 'jpg', 'png', 'gif', 'svg']
+export{
+    imageSuffix,
+    fileType
+}

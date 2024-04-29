@@ -7,11 +7,12 @@ import { useChatStore } from "@/stores/modules/chat";
 const { globalStatus } = storeToRefs(useGlobalStore());
 const { getFriendsList } = useGlobalStore();
 const { invokeEvent } = useIpcRenderer();
-const { chatList } = storeToRefs(useChatStore());
+const { chatList, chatData } = storeToRefs(useChatStore());
 const { chatUser } = storeToRefs(useGlobalStore());
 
 socketInstance.on("private-chat", async (message) => {
-  const { data, time, senderId, username, avatar } = message;
+  const { data, time, senderId, username, avatar, messageType, fileInfo } =
+    message;
 
   const item = chatList.value.find((item, index) => {
     if (item?.uuid === senderId) return { ...item, index };
@@ -57,8 +58,21 @@ socketInstance.on("private-chat", async (message) => {
     });
   }
 
-  chatList.value.unshift({
+  chatData.value.push({
     data,
+    messageType,
+    ...(messageType === "file"
+      ? {
+          fileInfo,
+        }
+      : {}),
+    time,
+    uuid: senderId,
+  });
+
+  // 更新聊天列表
+  chatList.value.unshift({
+    data: messageType === "file" ? fileInfo.name : data,
     time: Number(time),
     uuid: senderId,
     username,

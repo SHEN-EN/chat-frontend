@@ -9,7 +9,7 @@ import { storeToRefs } from 'pinia'
 import { useGlobalStore } from '@/stores/modules/global'
 import { convertFileSize } from '@/util/convertFileSize'
 import { useReadArrayBuffer } from '@/hooks/useReadArrayBuffer'
-import { fileType } from '@/util/commonFileType'
+import { fileType, imageSuffix } from '@/util/commonFileType'
 const { getUserInfo } = useGlobalStore()
 const { chatData } = storeToRefs(useChatStore())
 const senderValue = ref('')
@@ -41,11 +41,20 @@ const handleSendMessage = async (data: string | ArrayBuffer, file?: File) => {
   }
 
   chatData.value.push({
-    data: senderValue.value,
+    data,
+    messageType: data.constructor === ArrayBuffer ? 'file' : 'text',
+    ...(data.constructor === ArrayBuffer
+      ? {
+          fileInfo: {
+            name: file!.name,
+            type: file!.type,
+          },
+        }
+      : {}),
     time: Date.now(),
     uuid: getUserInfo().uuid,
   })
-  
+
   emitPrivateSocket(message)
   senderValue.value = ''
 }
@@ -56,7 +65,6 @@ const handleDrop = (event) => {
   const { name, size } = file
   useReadArrayBuffer(file).then((arrayBuffer: ArrayBuffer) => {
     const suffix = name.split('.').at(-1)
-    const imageSuffix = ['jpeg', 'jpg', 'png', 'gif', 'svg']
     ElMessageBox({
       message: h('div', null, [
         h('p', '发送给:'),

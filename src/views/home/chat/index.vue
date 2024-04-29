@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { imageSuffix } from '@/util/commonFileType'
 import { useIpcRenderer } from '@/hooks/useIpcRenderer'
 import { useRoute } from 'vue-router'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useChatStore } from '@/stores/modules/chat'
 import { useGlobalStore } from '@/stores/modules/global'
-import type { chatDataType } from '@/types/global'
+import type { chatDataType, fileInfo } from '@/types/global'
 import chatBubble from './components/chat-bubble.vue'
 import chatInput from './components/chat-input.vue'
 import mainWrapper from '@/components/main-wrapper.vue'
@@ -24,15 +25,32 @@ const rebuildChatData = computed(
   (): {
     message: any
     isSender: boolean
+    messageType: string
+    fileInfo?: fileInfo
   }[] => {
     return chatData.value.map((item: chatDataType) => {
       return {
         isSender: item.uuid === getUserInfo().uuid ? true : false,
-        message: item.data,
+        message:
+          item.messageType === 'file'
+            ? convertBufferToFile(item.data, item.fileInfo)
+            : item.data,
+        messageType: item.messageType,
+        ...(item.messageType === 'file' ? { fileInfo: item.fileInfo } : {}),
       }
     })
   }
 )
+
+const convertBufferToFile = (fileBuffer: ArrayBuffer, fileInfo: fileInfo) => {
+  const { type, name } = fileInfo
+  const blob = new Blob([fileBuffer], { type })
+  const file = new File([blob], name, { type })
+  if (imageSuffix.includes(name.split('.').at(-1) as string)) {
+    return URL.createObjectURL(blob)
+  }
+  return file
+}
 const timestampToDateString = (timestamp: number): string => {
   const currentDate = new Date()
   const targetDate = new Date(timestamp)
@@ -81,10 +99,10 @@ const handleSelectChat = async (user: chatDataType, index: number) => {
     params: [chatUser.value.uuid],
   })
 
-  chatData.value = await invokeEvent('rundb', {
-    query: `select * from tb_chatMsg where uuid = ?`,
-    params: [chatUser.value.uuid],
-  })
+  //   chatData.value = await invokeEvent('rundb', {
+  //     query: `select * from tb_chatMsg where uuid = ?`,
+  //     params: [chatUser.value.uuid],
+  //   })
 }
 
 fetchChatList()
@@ -133,7 +151,8 @@ uuid && fetchChatDetail(uuid as string)
             <span>Hi there!</span>
           </el-drawer>
           <el-scrollbar>
-            <chat-bubble v-for="(chat, index) in rebuildChatData" :isSender="chat.isSender" :message="chat.message" :key="index"></chat-bubble>
+            <chat-bubble v-for="(chat, index) in rebuildChatData" :isSender="chat.isSender" :message="chat.message" :messageType="chat.messageType" :fileInfo="chat?.fileInfo"
+              :key="index"></chat-bubble>
           </el-scrollbar>
         </div>
         <div class="chat-input">
@@ -242,7 +261,7 @@ uuid && fetchChatDetail(uuid as string)
 
   .top {
     padding: 0 20px;
-    height: 43px;
+    min-height: 43px;
     display: flex;
     align-items: center;
     justify-content: space-between;

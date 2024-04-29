@@ -2,9 +2,9 @@
     font-family: "iconfont"; /* Project id 4383173 */
     /* Color fonts */
     src: 
-         url('//at.alicdn.com/t/c/font_4383173_5bh744ssoiq.woff2?t=1714291216927') format('woff2'),
-         url('//at.alicdn.com/t/c/font_4383173_5bh744ssoiq.woff?t=1714291216927') format('woff'),
-         url('//at.alicdn.com/t/c/font_4383173_5bh744ssoiq.ttf?t=1714291216927') format('truetype');
+         url('//at.alicdn.com/t/c/font_4383173_p4sle26s5ka.woff2?t=1714381094995') format('woff2'),
+         url('//at.alicdn.com/t/c/font_4383173_p4sle26s5ka.woff?t=1714381094995') format('woff'),
+         url('//at.alicdn.com/t/c/font_4383173_p4sle26s5ka.ttf?t=1714381094995') format('truetype');
   }
   
   .iconfont {
@@ -13,6 +13,14 @@
     font-style: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .icon-more:before {
+    content: "\e6ad";
+  }
+  
+  .icon-video-camera:before {
+    content: "\e762";
   }
   
   .icon-html:before {
@@ -111,10 +119,6 @@
     content: "\e6c2";
   }
   
-  .icon-shipin:before {
-    content: "\e733";
-  }
-  
   .icon-yuyin:before {
     content: "\e614";
   }
@@ -137,14 +141,6 @@
   
   .icon-Icon-line-more:before {
     content: "\e7ec";
-  }
-  
-  .icon-video-camera:before {
-    content: "\e779";
-  }
-  
-  .icon-Video:before {
-    content: "\e62d";
   }
   
   .icon-xiaoxi:before {

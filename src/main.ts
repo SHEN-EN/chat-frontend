@@ -5,7 +5,7 @@ import "element-plus/dist/index.css";
 import "./fonts/font.css";
 import App from "./App.vue";
 import router from "./router";
-import "//at.alicdn.com/t/c/font_4383173_5bh744ssoiq.js";
+import "//at.alicdn.com/t/c/font_4383173_p4sle26s5ka.js";
 import "./scss/reset.scss";
 import "./scss/el-global.scss";
 
