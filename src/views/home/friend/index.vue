@@ -49,7 +49,7 @@ const handleClick = (item) => {
             <div class="title">{{ key }}</div>
             <div class="classification-item" v-for="friend in item" @click="handleClick(friend)">
               <el-avatar :size="40" :src="friend.avatar" />
-              <div class="name">{{ friend.notes  }}</div>
+              <div class="name">{{ friend.notes || friend.username }}</div>
             </div>
           </div>
         </el-scrollbar>

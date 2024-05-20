@@ -36,7 +36,7 @@ onMounted(() => {
   height: 100vh;
 
   .chat-list {
-    width: 260px;
+    width: 270px;
     background: #fff;
     border-right: 1px solid #f8eded;
     padding-top: 20px;

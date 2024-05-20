@@ -21,7 +21,9 @@
   "tar": "icon-zip",
 };
 const imageSuffix = ['jpeg', 'jpg', 'png', 'gif', 'svg']
+const videoSuffix = ['mp4','avi','mov','mkv']
 export{
     imageSuffix,
-    fileType
+    fileType,
+    videoSuffix
 }

@@ -1,5 +1,5 @@
 import socketInstance from "@/socket/index";
-import type { userInfo } from "@/types/global";
+import type { userInfo,fileInfo } from "@/types/global";
 import { useGlobalStore } from "@/stores/modules/global";
 const { getUserInfo } = useGlobalStore();
 let user: Partial<userInfo> = getUserInfo();
@@ -12,10 +12,7 @@ export const useEmitSocket = () => {
     senderId: string;
     avatar: string;
     reciverId: string;
-    fileInfo?: {
-      name: string;
-      type: string;
-    };
+    file?:fileInfo;
   }) => {
     socketInstance.emit("private-chat", message);
   };

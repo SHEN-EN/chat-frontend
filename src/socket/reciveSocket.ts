@@ -9,19 +9,24 @@ const { getFriendsList } = useGlobalStore();
 const { invokeEvent } = useIpcRenderer();
 const { chatList, chatData } = storeToRefs(useChatStore());
 const { chatUser } = storeToRefs(useGlobalStore());
-
 socketInstance.on("private-chat", async (message) => {
-  const { data, time, senderId, username, avatar, messageType, fileInfo } =
-    message;
+  let { data } = message;
+  const { time, senderId, username, avatar, messageType, fileInfo } = message;
 
-  const item = chatList.value.find((item, index) => {
-    if (item?.uuid === senderId) return { ...item, index };
-  });
+  const target = chatList.value.map((item, index) => {
+    if (item?.uuid === senderId) return {index, ...item };
+  })[0]
 
-  if (item) {
+  if (messageType === "file") {
+    
+    invokeEvent("download-file", { fileInfo, data });
+    data = fileInfo.name;
+  }
+
+  if (target) {
     //聊天列表存在发送人的ID不需要新增列表
     const { uuid } = chatUser.value;
-    if (item.uuid !== uuid) {
+    if (target.uuid !== uuid) {
       invokeEvent("rundb", {
         query: `update tb_chatlist 
         set 
@@ -31,7 +36,17 @@ socketInstance.on("private-chat", async (message) => {
             username = ?,
             avatar = ?
         where uuid = ?`,
-        params: [data, time, username, avatar, item.uuid],
+        params: [data, time, username, avatar, target.uuid],
+      });
+
+      // 更新聊天列表
+      chatList.value.unshift({
+        data,
+        time: Number(time),
+        uuid: senderId,
+        username,
+        avatar,
+        unreadnums: target.unreadnums++,
       });
     } else {
       // 在当前聊天用户的UI 则直接已读
@@ -44,10 +59,11 @@ socketInstance.on("private-chat", async (message) => {
             username = ?,
             avatar = ?
         where uuid = ?`,
-        params: [0, data, time, username, avatar, item.uuid],
+        params: [0, data, time, username, avatar, target.uuid],
       });
     }
-    chatList.value.splice(item.index, 1);
+    chatList.value.splice(target.index, 1);
+
   } else {
     // 新增入数据库
     invokeEvent("rundb", {
@@ -68,16 +84,6 @@ socketInstance.on("private-chat", async (message) => {
       : {}),
     time,
     uuid: senderId,
-  });
-
-  // 更新聊天列表
-  chatList.value.unshift({
-    data: messageType === "file" ? fileInfo.name : data,
-    time: Number(time),
-    uuid: senderId,
-    username,
-    avatar,
-    unreadnums: Number(1),
   });
 });
 socketInstance.on("add-friends", () => {

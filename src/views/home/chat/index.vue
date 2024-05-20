@@ -29,14 +29,16 @@ const rebuildChatData = computed(
     fileInfo?: fileInfo
   }[] => {
     return chatData.value.map((item: chatDataType) => {
+      const isSender = item.uuid === getUserInfo().uuid ? true : false
       return {
-        isSender: item.uuid === getUserInfo().uuid ? true : false,
+        isSender,
         message:
           item.messageType === 'file'
             ? convertBufferToFile(item.data, item.fileInfo)
             : item.data,
         messageType: item.messageType,
-        ...(item.messageType === 'file' ? { fileInfo: item.fileInfo } : {}),
+        ...(item.messageType === 'file' ? { file: item.fileInfo } : {}),
+        username: isSender ? getUserInfo().username : chatUser.username,
       }
     })
   }
@@ -151,8 +153,8 @@ uuid && fetchChatDetail(uuid as string)
             <span>Hi there!</span>
           </el-drawer>
           <el-scrollbar>
-            <chat-bubble v-for="(chat, index) in rebuildChatData" :isSender="chat.isSender" :message="chat.message" :messageType="chat.messageType" :fileInfo="chat?.fileInfo"
-              :key="index"></chat-bubble>
+            <chat-bubble v-for="(chat, index) in rebuildChatData" :isSender="chat.isSender" :message="chat.message" :messageType="chat.messageType" :fileInfo="chat?.file" :key="index"
+              :username="chat.username"></chat-bubble>
           </el-scrollbar>
         </div>
         <div class="chat-input">
@@ -184,9 +186,10 @@ uuid && fetchChatDetail(uuid as string)
     padding: 10px;
     box-sizing: border-box;
     cursor: pointer;
+    overflow: hidden;
 
     .content {
-      margin-left: 10px;
+      padding-left: 10px;
       flex: 1;
       display: flex;
       flex-direction: column;

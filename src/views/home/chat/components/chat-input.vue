@@ -23,6 +23,13 @@ const props = defineProps({
 })
 
 const handleSendMessage = async (data: string | ArrayBuffer, file?: File) => {
+  let name, type, size
+  if (file) {
+    name = file.name
+    type = file.type
+    size = file.size
+  }
+
   const message = {
     data: data,
     time: Date.now(),
@@ -33,8 +40,9 @@ const handleSendMessage = async (data: string | ArrayBuffer, file?: File) => {
     ...(data.constructor === ArrayBuffer
       ? {
           fileInfo: {
-            name: file!.name,
-            type: file!.type,
+            name,
+            type,
+            size,
           },
         }
       : {}),
@@ -46,8 +54,9 @@ const handleSendMessage = async (data: string | ArrayBuffer, file?: File) => {
     ...(data.constructor === ArrayBuffer
       ? {
           fileInfo: {
-            name: file!.name,
-            type: file!.type,
+            name,
+            type,
+            size,
           },
         }
       : {}),

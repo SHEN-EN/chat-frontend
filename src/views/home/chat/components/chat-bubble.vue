@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import { imageSuffix } from '@/util/commonFileType'
+import { imageSuffix, videoSuffix } from '@/util/commonFileType'
+import { convertFileSize } from '@/util/convertFileSize'
 const props = defineProps({
   isSender: {
     type: Boolean,
@@ -51,10 +52,10 @@ const props = defineProps({
           <div class="message file" :class="{ 'left': isSender, 'right': !isSender }">
             <div class="file-info">
               <div class="file-name">
-                2023软件工程转身本一班
+                {{ fileInfo.name }}
               </div>
               <div class="file-status">
-                <div class="file-size">10</div>
+                <div class="file-size">{{ convertFileSize(fileInfo.size) }}</div>
               </div>
             </div>
             <svg class="iconfont" aria-hidden="true">
@@ -151,8 +152,8 @@ const props = defineProps({
       background-color: #fff;
     }
     .iconfont {
-      flex: 0.5;
-      width: 70px;
+      flex: 0.3;
+      width: 50px;
     }
     &-info {
       flex: 1;

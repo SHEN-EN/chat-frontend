@@ -54,7 +54,7 @@ const handleLogin = () => {
   userRequestModel
     .login(params)
     .then((res) => {
-      invokeEvent('initdb', res.data.uuid)
+      initBase(res.data.uuid)
       setAuthorization(res.token)
       setUserInfo(res.data)
       router.push({
@@ -87,7 +87,7 @@ const handleRegister = () => {
   userRequestModel
     .register(params)
     .then((res) => {
-      invokeEvent('initdb', res.data.uuid)
+      initBase(res.data.uuid)
 
       setAuthorization(res.token)
       setUserInfo(res.data)
@@ -109,7 +109,16 @@ const getPublicKey = async () => {
   crypt.setPublicKey(atob(publicKey.value))
   localStorage.setItem('public-key', publicKey.value)
 }
+const initBase = (uuid: string) => {
+  invokeEvent('init-basedir', {
+    image: `${uuid}/images`,
+    chatMsg: `${uuid}/msg/`,
+    video: `${uuid}/video`,
+    file: `${uuid}/file`,
+  })
 
+  invokeEvent('initdb', uuid)
+}
 print('WELCOME')
 getPublicKey()
 </script>

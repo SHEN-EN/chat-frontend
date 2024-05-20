@@ -70,7 +70,9 @@ let win;
 electron.app.setPath("userData", `${electron.app.getPath("userData")} - Instance2`);
 const { ipcMain } = require("electron");
 const sqlite3 = require("sqlite3").verbose();
+const fs = require("fs");
 let db = null;
+let uuid = null;
 const createWindow = () => {
   win = new electron.BrowserWindow({
     webPreferences: {
@@ -146,21 +148,46 @@ const receiveEvent = () => {
     });
   });
   ipcMain.handle("initdb", (event, args) => {
-    const fs = require("fs");
-    fs.mkdir(
-      path.resolve(__dirname, `../src/SQLite/${args}`),
-      { recursive: true },
-      (err) => {
-        if (err) {
-          console.error("Error creating folder:", err);
-        } else {
-          console.log("Folder created successfully");
-        }
-      }
+    uuid = args;
+    const dbPath = path.resolve(
+      __dirname,
+      `../src/SQLite/${args}/msg/ChatMsg.db`
     );
-    const dbPath = path.resolve(__dirname, `../src/SQLite/${args}/ChatMsg.db`);
     db = new sqlite3.Database(dbPath);
     createSQLiteDatabase();
+  });
+  ipcMain.handle("download-file", (_, args) => {
+    let { fileInfo, data } = args;
+    const filePath = path.join(
+      __dirname,
+      `../src/SQLite/${uuid}/file/${fileInfo.name}`
+    );
+    console.log(data);
+    data = Buffer.from(data);
+    const writeStream = fs.createWriteStream(filePath);
+    writeStream.write(data);
+    writeStream.on("drain", function() {
+      writeStream.close();
+      console.log("Data has been drained");
+    });
+    writeStream.on("error", function(err) {
+      console.error("Error when writing data to file:", err);
+    });
+  });
+  ipcMain.handle("init-basedir", (_, args) => {
+    for (const key in args) {
+      fs.mkdir(
+        path.resolve(__dirname, `../src/SQLite/${args[key]}`),
+        { recursive: true },
+        (err) => {
+          if (err) {
+            console.error("Error creating folder:", err);
+          } else {
+            console.log("Folder created successfully");
+          }
+        }
+      );
+    }
   });
 };
 const sendEvent = () => {

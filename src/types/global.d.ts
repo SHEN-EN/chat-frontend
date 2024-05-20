@@ -7,8 +7,9 @@ export type userInfo = {
     description:string;
     sex:string;
 };
-export type fileInfo ={
+export type fileInfo {
     name:string;
+    size:number;
     type:string;
 }
 export type chatDataType = {

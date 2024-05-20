@@ -65,6 +65,7 @@ export const useGlobalStore = defineStore("global", () => {
   const classifyCharacters = () => {
     characterMap.value = {};
     for (const character of friendsList.value) {
+        
       const firstLetter = pinyin(
         character!.notes || character!.username
       )[0][0].toUpperCase();
