@@ -28,3 +28,9 @@ export type chatListType = {
     unreadnums:number
     uuid:string
 }
+export type menuItem={
+    name: string
+    icon:? string
+    callback:?Function
+    args: any
+}

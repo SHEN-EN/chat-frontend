@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useContextmenu } from '@/hooks/useContextmenu'
 import { useIpcRenderer } from '@/hooks/useIpcRenderer'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useGlobalStore } from '@/stores/modules/global'
@@ -121,6 +122,23 @@ const initBase = (uuid: string) => {
 }
 print('WELCOME')
 getPublicKey()
+const cb = (e) => {
+  console.log(e)
+}
+onMounted(() => {
+  useContextmenu([
+    {
+      name: '打开',
+      icon: 'icon-chat',
+      callback: cb,
+    },
+    {
+      name: '关闭',
+      icon: null,
+      callback: cb,
+    },
+  ])
+})
 </script>
 <template>
   <div class="login">

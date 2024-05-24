@@ -104,9 +104,11 @@ const receiveEvent = () => {
       __dirname,
       `../src/SQLite/${uuid}/file/${fileInfo.name}`
     );
-    console.log(data);
+
     data = Buffer.from(data);
+
     const writeStream = fs.createWriteStream(filePath);
+
     writeStream.write(data);
 
     writeStream.on("drain", function () {
@@ -117,6 +119,8 @@ const receiveEvent = () => {
     writeStream.on("error", function (err) {
       console.error("Error when writing data to file:", err);
     });
+
+  
   });
   ipcMain.handle("init-basedir", (_, args) => {
     for (const key in args) {

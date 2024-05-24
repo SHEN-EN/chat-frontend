@@ -162,7 +162,6 @@ const receiveEvent = () => {
       __dirname,
       `../src/SQLite/${uuid}/file/${fileInfo.name}`
     );
-    console.log(data);
     data = Buffer.from(data);
     const writeStream = fs.createWriteStream(filePath);
     writeStream.write(data);

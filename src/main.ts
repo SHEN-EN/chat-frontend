@@ -8,7 +8,7 @@ import router from "./router";
 import "//at.alicdn.com/t/c/font_4383173_p4sle26s5ka.js";
 import "./scss/reset.scss";
 import "./scss/el-global.scss";
-
+import "./scss/variable.css"
 const app = createApp(App);
 app.use(createPinia());
 app.use(router);

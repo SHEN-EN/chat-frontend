@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useContextmenu } from '@/hooks/useContextmenu'
+
 import { imageSuffix } from '@/util/commonFileType'
 import { useIpcRenderer } from '@/hooks/useIpcRenderer'
 import { useRoute } from 'vue-router'
@@ -20,6 +22,17 @@ const { chatUser } = storeToRefs(useGlobalStore())
 const route = useRoute()
 
 const uuid = route.query?.uuid || ''
+
+useContextmenu([
+  {
+    name: '打开',
+    icon: 'icon-chat',
+  },
+  {
+    name: '关闭',
+    icon: null,
+  },
+])
 
 const rebuildChatData = computed(
   (): {
